@@ -1,21 +1,47 @@
-import { StyleSheet, View, Text, Image, TextInput, Button, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { StyleSheet, View, Text, Image, TextInput, Button, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { handleSignUp } from '../services/createAuth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
 
 export default function SignUp() {
     const handleGoogleSignUp = () => {
-        // Add your Google sign-up logic here
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                // Handle sign-up result
+            })
+            .catch((error) => {
+                // Handle sign-up error
+            });
     };
 
     const handleFacebookSignUp = () => {
-        // Add your Facebook sign-up logic here
+        const auth = getAuth();
+        const provider = new FacebookAuthProvider();
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                // Handle sign-up result
+            })
+            .catch((error) => {
+                // Handle sign-up error
+            });
     };
 
     const navigation = useNavigation();
 
     const navigateToLogin = () => {
-        navigation.navigate('Login'); 
+        navigation.navigate('Login');
     };
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    //   TODO: Login Function
+    const signup = () => {
+        handleSignUp(email, password)
+    }
 
     return (
         <View style={styles.container}>
@@ -31,22 +57,30 @@ export default function SignUp() {
 
             <View style={styles.inputcontainer}>
                 <TextInput placeholder="Username" style={styles.input} placeholderTextColor="white" />
-                <TextInput placeholder="Email" style={styles.input} placeholderTextColor="white" />
-                <TextInput placeholder="Password" secureTextEntry={true} style={styles.input} placeholderTextColor="white" />
-            </View>
-            <View style={styles.button}>
-                <Text title="Sign Up" style={styles.buttonText}>Sign Up</Text>
+                <TextInput placeholder="Email" style={styles.input} placeholderTextColor="white" onChangeText={newEmail => setEmail(newEmail)} />
+                <TextInput placeholder="Password" secureTextEntry={true} style={styles.input} placeholderTextColor="white" onChangeText={newPassword => setPassword(newPassword)} />
             </View>
             
-            <TouchableOpacity onPress={navigateToLogin}  style={styles.login}>
-                <Text style={[styles.loginText, {color: 'white'}]}>Sign In</Text>
+            <View style={styles.button}>
+                <TouchableOpacity onPress={signup}>
+                    <Text title="Sign Up" style={styles.buttonText}>Sign Up</Text>
+                </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity onPress={navigateToLogin} style={styles.login}>
+            <Text style={[styles.loginText, { color: 'white' }]}>Already have an account</Text>
+                <Text style={[styles.loginText, { color: '#D50A0A' }]}> Sign In</Text>
             </TouchableOpacity>
 
             <View style={styles.line}></View>
             <Text style={styles.other}>or SignUp with</Text>
             <View style={styles.loginButton}>
-                <Image source={require('../assets/Google.png')} onPress={handleGoogleSignUp} style={[styles.loginBut, { marginRight: 60, borderColor: 'red' }]} />
-                <Image source={require('../assets/facebook.png')} onPress={handleFacebookSignUp} style={[styles.loginBut, { marginRight: 10, borderColor: 'red' }]} />
+                <TouchableOpacity onPress={handleGoogleSignUp}>
+                    <Image source={require('../assets/Google.png')} style={[styles.loginBut, { marginRight: 60, borderColor: 'red' }]} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleFacebookSignUp}>
+                    <Image source={require('../assets/facebook.png')} style={[styles.loginBut, { marginRight: 10, borderColor: 'red' }]} />
+                </TouchableOpacity>
             </View>
         </View>
     )
@@ -62,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundImage: {
         resizeMode: 'cover',
         justifyContent: 'center',
-        height: 1000,
+        height: "100%",
         width: '100%',
         zIndex: 0,
     },
@@ -87,7 +121,8 @@ const styles = StyleSheet.create({
         top: 330,
         position: 'absolute',
         width: '100%',
-        left: 40
+        left: 40,
+        color: 'white'
     },
     input: {
         height: 40,
@@ -99,6 +134,7 @@ const styles = StyleSheet.create({
         color: 'white',
         borderRadius: 8,
         borderColor: 'grey',
+        color: 'white'
     },
     loginButton: {
         position: 'absolute',
@@ -133,7 +169,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         color: 'white',
         fontSize: 15,
-        top: 630
+        top: 630,
+        flexDirection: 'row',
     },
     line: {
         borderBottomColor: 'white',

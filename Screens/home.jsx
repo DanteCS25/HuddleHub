@@ -1,15 +1,23 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }) => {
+
+    const navigateToCompetition = () => {
+        navigation.navigate('Competition'); 
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.menu}>
-                <Image
-                    source={require('../assets/menu.png')}
-                    style={styles.menuButton}
-                />
+                <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                    <Image
+                        source={require('../assets/menu.png')}
+                        style={styles.menuButton}
+                    />
+                </TouchableOpacity>
                 <Image
                     source={require('../assets/NFLogo.png')}
                     style={styles.menuLogo}
@@ -37,6 +45,26 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.header}>
                     Thriving NFL Spotlight
                 </Text>
+                <View style={styles.cards2}>
+                    <LinearGradient
+                        start={[1, 0.5]}
+                        end={[1, 0]}
+                        colors={['#161D26', '#111720']}
+                        style={styles.cards2}>
+                        <Image
+                            source={require('../assets/Green.png')}
+                            style={styles.footballer}
+                        />
+
+                        <View style={styles.comptetition}>
+                            <Text style={styles.info1}>Live Comentary</Text>
+                            <TouchableOpacity onPress={navigateToCompetition} style={styles.button}>
+                                <Text title="Sign Up" style={styles.buttonText}>Join Us</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                    </LinearGradient>
+                </View>
             </View>
         </View>
     );
@@ -80,11 +108,11 @@ const styles = StyleSheet.create({
     searchImage: {
         width: 30,
         height: 30,
-        marginLeft: 18,
+        marginLeft: "5%",
     },
     text: {
         color: 'white',
-        marginLeft: 25,
+        marginLeft: "6%",
         fontSize: 18,
         opacity: 0.5
     },
@@ -92,7 +120,8 @@ const styles = StyleSheet.create({
         borderBottomColor: 'white',
         borderBottomWidth: 20,
         width: 2,
-        marginLeft: 168,
+        marginRight: 'auto',
+        marginLeft: "45%",
         opacity: 0.3
     },
     micImage: {
@@ -101,21 +130,69 @@ const styles = StyleSheet.create({
         marginLeft: 18,
         opacity: 0.6,
         marginLeft: 'auto',
-        marginRight: 10
+        marginRight: "9%"
     },
     cards1: {
         height: 350,
         width: '80%',
         top: 150,
         marginLeft: '10%',
-        borderRadius: 20
+        borderRadius: 20,
+        alignItems: 'center',
+
     },
     header: {
         color: 'white',
         fontSize: 20,
         textAlign: 'center',
         fontFamily: 'Verdana'
-    }
+    },
+    cards2: {
+        height: '110%',
+        width: '100%',
+        borderRadius: 20,
+        top: '5%',
+    },
+    footballer: {
+        width: '95%',
+        height: 435,
+        marginLeft: 'auto',
+
+    },
+    info1: {
+        position: 'absolute',
+        color: 'white',
+        fontSize: 20,
+        width: '100%',
+        textAlign: 'center',
+        top: '15%'
+    },
+    comptetition: {
+        width: '100%',
+        height: 130,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        position: 'absolute',
+        borderRadius: 20,
+        top: '70%',
+        filter: 'blur(50px)' , // Added blur effect
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    button: {
+        backgroundColor: '#D50A0A',
+        borderRadius: 5,
+        position: 'absolute',
+        width: '50%',
+        height: 40,     
+        top: '50%'   
+    },
+    buttonText: {
+        color: 'white',
+        textAlign: 'center',
+        top: 11,
+        textDecorationLine: 'none',
+    },
 });
 
 export default HomeScreen;

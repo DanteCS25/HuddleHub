@@ -1,14 +1,17 @@
 import { StyleSheet, View, Text, Image, TextInput, Button, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
+import { handleLogin } from '../services/authService';
+
 
 export default function Login() {
     const handleGoogleSignUp = () => {
-        // Add your Google sign-up logic here
+        // Implement Google sign-in logic using Firebase signInWithPopup
     };
 
     const handleFacebookSignUp = () => {
-        // Add your Facebook sign-up logic here
+        // Implement Facebook sign-in logic using Firebase signInWithPopup
     };
 
     const navigation = useNavigation();
@@ -18,8 +21,18 @@ export default function Login() {
     };
 
     const navigateToHome = () => {
-        navigation.navigate('Home'); 
+        navigation.navigate('Home');
     };
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    //   TODO: Login Function
+    const login = () => {
+        handleLogin(email, password)
+    }
+
+    // const goToRegister = () => {}
 
     return (
         <View style={styles.container}>
@@ -34,25 +47,31 @@ export default function Login() {
             <Text style={styles.text}>Sign In</Text>
 
             <View style={styles.inputcontainer}>
-                <TextInput placeholder="Email" style={styles.input} placeholderTextColor="white" />
-                <TextInput placeholder="Password" secureTextEntry={true} style={styles.input} placeholderTextColor="white" />
+                <TextInput placeholder="Email" style={styles.input} placeholderTextColor="white" onChangeText={newText => setEmail(newText)}  defaultValue={email}/>
+                <TextInput placeholder="Password" secureTextEntry={true} style={styles.input} placeholderTextColor="white" onChangeText={newText => setPassword(newText)}/>
             </View>
+
             <View style={styles.button}>
-            <TouchableOpacity onPress={navigateToHome}>
-                <Text title="Sign Up" style={styles.buttonText}>Sign In</Text>
+                <TouchableOpacity onPress={login}>
+                    <Text title="Sign Up" style={styles.buttonText}>Sign In</Text>
                 </TouchableOpacity>
             </View>
 
             <TouchableOpacity onPress={navigateToSignUp}  style={styles.login}>
-                <Text style={[styles.loginText, {color: 'white'}]}>Register</Text>
+            <Text style={[styles.loginText, {color: 'white'}]}>Create an account </Text>
+                <Text style={[styles.loginText, {color: '#D50A0A'}]}>Register</Text>
             </TouchableOpacity>
 
 
             <View style={styles.line}></View>
             <Text style={styles.other}>or Sign In with</Text>
             <View style={styles.loginButton}>
-                <Image source={require('../assets/Google.png')} onPress={handleGoogleSignUp} style={[styles.loginBut, { marginRight: 60, borderColor: 'red' }]} />
-                <Image source={require('../assets/facebook.png')} onPress={handleFacebookSignUp} style={[styles.loginBut, { marginRight: 10, borderColor: 'red' }]} />
+                <TouchableOpacity onPress={handleGoogleSignUp}>
+                    <Image source={require('../assets/Google.png')} style={[styles.loginBut, { marginRight: 60, borderColor: 'red' }]} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleFacebookSignUp}>
+                    <Image source={require('../assets/facebook.png')} style={[styles.loginBut, { marginRight: 10, borderColor: 'red' }]} />
+                </TouchableOpacity>
             </View>
         </View>
     )
@@ -68,7 +87,7 @@ const styles = StyleSheet.create({
     backgroundImage: {
         resizeMode: 'cover',
         justifyContent: 'center',
-        height: 1000,
+        height: "100%",
         width: '100%',
         zIndex: 0,
     },
@@ -139,7 +158,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         color: 'white',
         fontSize: 15,
-        top: 600
+        top: 600,
+        flexDirection: 'row',
     },
     line: {
         borderBottomColor: 'white',

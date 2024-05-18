@@ -4,7 +4,7 @@
     "slug": "HuddleHub",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/AppLogo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/AppLogo.png",
@@ -16,12 +16,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/AppLogo.png",
+        "backgroundColor": "#111720"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/AppLogo.png"
     }
   }
 }
