@@ -4,7 +4,6 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
 import { handleLogin } from '../services/authService';
 
-
 export default function Login() {
     const handleGoogleSignUp = () => {
         // Implement Google sign-in logic using Firebase signInWithPopup

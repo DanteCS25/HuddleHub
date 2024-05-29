@@ -56,10 +56,10 @@ export default function App() {
           <Stack.Navigator initialRouteName="SignUp" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="SignUp" component={SignUp} />
             <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Competition" component={Competition} />
           </Stack.Navigator>
         )}
       </>
-      <Competition />
       <StatusBar style="light" />
     </NavigationContainer>
   );

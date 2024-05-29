@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
@@ -10,63 +10,65 @@ const HomeScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.menu}>
-                <TouchableOpacity onPress={() => navigation.openDrawer()}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.container}>
+                <View style={styles.menu}>
+                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                        <Image
+                            source={require('../assets/menu.png')}
+                            style={styles.menuButton}
+                        />
+                    </TouchableOpacity>
                     <Image
-                        source={require('../assets/menu.png')}
-                        style={styles.menuButton}
+                        source={require('../assets/NFLogo.png')}
+                        style={styles.menuLogo}
                     />
-                </TouchableOpacity>
-                <Image
-                    source={require('../assets/NFLogo.png')}
-                    style={styles.menuLogo}
-                />
-            </View>
-            <View>
-                <LinearGradient
-                    start={[0, 1]}
-                    end={[1, 0]}
-                    colors={['#161D26', '#111720']}
-                    style={styles.search}>
-                    <Image
-                        source={require('../assets/search.png')}
-                        style={styles.searchImage}
-                    />
-                    <Text style={styles.text}>Search</Text>
-                    <View style={styles.line}></View>
-                    <Image
-                        source={require('../assets/mic.png')}
-                        style={styles.micImage}
-                    />
-                </LinearGradient>
-            </View>
-            <View style={styles.cards1}>
-                <Text style={styles.header}>
-                    Thriving NFL Spotlight
-                </Text>
-                <View style={styles.cards2}>
+                </View>
+                <View>
                     <LinearGradient
-                        start={[1, 0.5]}
+                        start={[0, 1]}
                         end={[1, 0]}
                         colors={['#161D26', '#111720']}
-                        style={styles.cards2}>
+                        style={styles.search}>
                         <Image
-                            source={require('../assets/Green.png')}
-                            style={styles.footballer}
+                            source={require('../assets/search.png')}
+                            style={styles.searchImage}
                         />
-
-                        <View style={styles.comptetition}>
-                            <Text style={styles.info1}>Live Comentary</Text>
-                            <TouchableOpacity onPress={navigateToCompetition} style={styles.button}>
-                                <Text title="Sign Up" style={styles.buttonText}>Join Us</Text>
-                            </TouchableOpacity>
-                        </View>
-
+                        <Text style={styles.text}>Search</Text>
+                        <View style={styles.line}></View>
+                        <Image
+                            source={require('../assets/mic.png')}
+                            style={styles.micImage}
+                        />
                     </LinearGradient>
                 </View>
+                <View style={styles.cards1}>
+                    <Text style={styles.header}>
+                        Thriving NFL Spotlight
+                    </Text>
+                    <View style={styles.cards2}>
+                        <LinearGradient
+                            start={[1, 0.5]}
+                            end={[1, 0]}
+                            colors={['#161D26', '#111720']}
+                            style={styles.cards2}>
+                            <Image
+                                source={require('../assets/Green.png')}
+                                style={styles.footballer}
+                            />
+
+                            <View style={styles.comptetition}>
+                                <Text style={styles.info1}>Live Comentary</Text>
+                                <TouchableOpacity onPress={navigateToCompetition} style={styles.button}>
+                                    <Text title="Sign Up" style={styles.buttonText}>Join Us</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                        </LinearGradient>
+                    </View>
+                </View>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -193,6 +195,9 @@ const styles = StyleSheet.create({
         top: 11,
         textDecorationLine: 'none',
     },
+    scrollContainer: {
+        flex: 1,
+    }
 });
 
 export default HomeScreen;
