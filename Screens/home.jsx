@@ -3,11 +3,8 @@ import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } f
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
-
-    const navigateToCompetition = () => {
-        navigation.navigate('Competition'); 
-    };
+const HomeScreen = () => {
+    const navigation = useNavigation();
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -24,6 +21,11 @@ const HomeScreen = ({ navigation }) => {
                         style={styles.menuLogo}
                     />
                 </View>
+                {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text>Feed Screen</Text>
+                    <Button title="Open drawer" onPress={() => navigation.openDrawer()} />
+                    <Button title="Toggle drawer" onPress={() => navigation.toggleDrawer()} />
+                </View> */}
                 <View>
                     <LinearGradient
                         start={[0, 1]}
@@ -59,7 +61,7 @@ const HomeScreen = ({ navigation }) => {
 
                             <View style={styles.comptetition}>
                                 <Text style={styles.info1}>Live Comentary</Text>
-                                <TouchableOpacity onPress={navigateToCompetition} style={styles.button}>
+                                <TouchableOpacity  onPress={() => navigation.navigate('Competition')} style={styles.button}>
                                     <Text title="Sign Up" style={styles.buttonText}>Join Us</Text>
                                 </TouchableOpacity>
                             </View>
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         borderRadius: 20,
         top: '70%',
-        filter: 'blur(50px)' , // Added blur effect
+        filter: 'blur(50px)', // Added blur effect
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
@@ -186,8 +188,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         position: 'absolute',
         width: '50%',
-        height: 40,     
-        top: '50%'   
+        height: 40,
+        top: '50%'
     },
     buttonText: {
         color: 'white',

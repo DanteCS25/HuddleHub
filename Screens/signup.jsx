@@ -38,7 +38,7 @@ export default function SignUp() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    //   TODO: Login Function
+    //   TODO: Signup Function
     const signup = () => {
         handleSignUp(email, password)
     }
