@@ -1,28 +1,45 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useEffect, useState } from 'react';
 import { auth } from './firebase';
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { BlurView } from 'expo-blur';
 
 // Screens
 import HomeScreen from './Screens/home';
 import SignUp from './Screens/signup';
 import Login from './Screens/login';
 import Competition from './Screens/competition';
+import Trivia from './Screens/trivia';
+import Leaderboard from './Screens/leaderboard';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
+const handleSignOut = () => {
+    signOut(auth)
+        .then(() => {
+            console.log("User signed out successfully");
+        })
+        .catch((error) => {
+            console.log(error.message);
+        });
+};
+
 const CustomDrawerContent = (props) => (
-  <DrawerContentScrollView {...props} style={styles.drawerContent}>
-    <View style={styles.drawerHeader}>
-      <Text style={styles.drawerHeaderText}>HuddleHub</Text>
-    </View>
-    <DrawerItemList {...props} />
+  <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContent}>
+    <BlurView intensity={50} style={StyleSheet.absoluteFill}>
+      <View style={styles.drawerHeader}>
+        <Text style={styles.drawerHeaderText}>HuddleHub</Text>
+      </View>
+      <DrawerItemList {...props} />
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.signOutButtonText}>Sign Out</Text>
+      </TouchableOpacity>
+    </BlurView>
   </DrawerContentScrollView>
 );
 
@@ -32,15 +49,17 @@ const DrawerContent = () => (
     drawerContent={(props) => <CustomDrawerContent {...props} />}
     screenOptions={{
       headerShown: false,
+      drawerType: 'front', // Ensures the drawer comes over the content
       drawerStyle: styles.drawer,
-      drawerContentOptions: {
-        activeTintColor: '#e91e63',
-        inactiveTintColor: '#fff',
-      },
+      drawerActiveTintColor: 'white',
+      drawerActiveBackgroundColor: 'red',
+      drawerInactiveTintColor: 'grey',
     }}
   >
     <Drawer.Screen name="Home" component={HomeScreen} />
     <Drawer.Screen name="Competition" component={Competition} />
+    <Drawer.Screen name="Trivia" component={Trivia} />
+    <Drawer.Screen name="Leaderboard" component={Leaderboard} />
   </Drawer.Navigator>
 );
 
@@ -57,6 +76,7 @@ export default function App() {
         setLoggedIn(true);
       } else {
         console.log('No User logged in...');
+        setLoggedIn(false); // Update the state to reflect user sign-out
       }
     });
     return unsubscribe;
@@ -96,20 +116,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   drawer: {
-    backgroundColor: '#333',
+    backgroundColor: 'transparent', // Make the drawer itself transparent
     width: 250,
   },
   drawerContent: {
     flex: 1,
-    backgroundColor: '#444',
   },
   drawerHeader: {
+    marginTop: '20%',
     padding: 20,
-    backgroundColor: '#555',
   },
   drawerHeaderText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 20,
+    fontWeight: 'bold',
+  },
+  signOutButton: {
+    backgroundColor: 'red',
+    padding: 15,
+    margin: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: '200%'
+  },
+  signOutButtonText: {
+    color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
