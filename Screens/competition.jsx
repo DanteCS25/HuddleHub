@@ -1,154 +1,181 @@
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
-import React from 'react'
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { BlurView } from 'expo-blur';
+import { getCompUser } from '../services/dbService';
+import { AntDesign } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 export default function Competition() {
     const navigation = useNavigation();
+    const [CompUsers, setCompUsers] = useState([]);
+
+    useFocusEffect(
+        useCallback(() => {
+            handleGettingOfData();
+            return () => {
+                // Cleanup if needed
+            };
+        }, [])
+    );
+
+    const handleGettingOfData = async () => {
+        const allData = await getCompUser();
+        setCompUsers(allData);
+    };
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.container}>
-                <View style={styles.menu}>
-                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
+        <LinearGradient
+            colors={['#202B3D', '#121521']}
+            start={[1, 0]}
+            end={[1, 1]}
+            style={styles.gradient}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.container}>
+                    <View style={styles.menu}>
+                        <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.menuButtonContainer}>
+                            <Image
+                                source={require('../assets/menu.png')}
+                                style={styles.menuButton}
+                            />
+                        </TouchableOpacity>
+                        <View style={styles.spacer} />
                         <Image
-                            source={require('../assets/menu.png')}
-                            style={styles.menuButton}
+                            source={require('../assets/NFLogo.png')}
+                            style={styles.menuLogo}
                         />
-                    </TouchableOpacity>
-                    <Image
-                        source={require('../assets/NFLogo.png')}
-                        style={styles.menuLogo}
-                    />
+                    </View>
+                    <BlurView intensity={50} style={styles.signupContent}>
+                        <View style={styles.signupInnerContent}>
+                            <View style={styles.textContainer}>
+                                <Text style={styles.drawerHeaderText}>Enter the Huddle</Text>
+                            </View>
+                            <TouchableOpacity style={styles.signOutButton} onPress={() => navigation.navigate('JoinUs')}>
+                                <Text style={styles.signOutButtonText}>Join Us</Text>
+                            </TouchableOpacity>
+                            
+                        </View>
+                    </BlurView>
+                    <SafeAreaView style={styles.dataContainer}>
+                        {CompUsers.length > 0 ? (
+                            CompUsers.map((item, index) => (
+                                <TouchableOpacity key={index} style={styles.card} onPress={() => navigation.navigate("Details")}>
+                                    <Text>{item.title}</Text>
+                                    {item.priority ? <AntDesign name="star" size={24} color="red" /> : null}
+                                </TouchableOpacity>
+                            ))
+                        ) : (
+                            <Text style={styles.noItemsText}>No Items Found Yet</Text>
+                        )}
+                    </SafeAreaView>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </LinearGradient>
     );
-};
+}
 
 const styles = StyleSheet.create({
+    gradient: {
+        flex: 1,
+    },
     container: {
-        backgroundColor: '#111720',
-        height: '100%',
+        flex: 1,
+        backgroundColor: 'transparent',
     },
     menu: {
-        top: 80,
         flexDirection: 'row',
-
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingHorizontal: 30,
+        position: 'absolute',
+        top: 80,
+    },
+    menuButtonContainer: {
+        flex: 1,
     },
     menuButton: {
         width: 25,
         height: 25,
-        marginLeft: 40,
-        top: 8
     },
     menuLogo: {
         width: 50,
         height: 50,
-        marginLeft: 'auto',  // Align to the right
-        marginRight: 30,
     },
-    search: {
-        marginLeft: 30,
-        width: "90%",
-        height: 60,
+    spacer: {
+        flex: 1,
+    },
+    signupContent: {
+        width: '90%',
+        backgroundColor: 'transparent',
+        alignSelf: 'center',
+        padding: 20,
         borderRadius: 10,
-        top: 110,
-        shadowColor: 'black',
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 2.0,
-        shadowRadius: 3,
+        marginTop: '40%',
+        overflow: 'hidden',
+    },
+    signupInnerContent: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
     },
-    searchImage: {
-        width: 30,
-        height: 30,
-        marginLeft: "5%",
+    textContainer: {
+        flex: 1,
     },
-    text: {
+    drawerHeaderText: {
+        fontSize: 20,
         color: 'white',
-        marginLeft: "6%",
-        fontSize: 18,
-        opacity: 0.5
     },
-    line: {
-        borderBottomColor: 'white',
-        borderBottomWidth: 20,
-        width: 2,
-        marginRight: 'auto',
-        marginLeft: "45%",
-        opacity: 0.3
+    signOutButton: {
+        backgroundColor: 'red',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
     },
-    micImage: {
-        width: 25,
-        height: 25,
-        marginLeft: 18,
-        opacity: 0.6,
-        marginLeft: 'auto',
-        marginRight: "9%"
+    signOutButtonText: {
+        color: 'white',
+        fontSize: 16,
     },
-    cards1: {
-        height: 350,
-        width: '80%',
-        top: 150,
-        marginLeft: '10%',
-        borderRadius: 20,
+    scrollContainer: {
+        flexGrow: 1,
+    },
+    dataContainer: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+    },
+    card: {
+        width: '100%',
+        backgroundColor: 'white',
+        padding: 15,
+        flexDirection: 'row',
         alignItems: 'center',
-
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        borderRadius: 5,
     },
-    header: {
-        color: 'white',
-        fontSize: 20,
-        textAlign: 'center',
-        fontFamily: 'Verdana'
-    },
-    cards2: {
-        height: '110%',
-        width: '100%',
-        borderRadius: 20,
-        top: '5%',
-    },
-    footballer: {
-        width: '95%',
-        height: 435,
-        marginLeft: 'auto',
-
-    },
-    info1: {
-        position: 'absolute',
-        color: 'white',
-        fontSize: 20,
-        width: '100%',
-        textAlign: 'center',
-        top: '15%'
-    },
-    comptetition: {
-        width: '100%',
-        height: 130,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        position: 'absolute',
-        borderRadius: 20,
-        top: '70%',
-        filter: 'blur(50px)', // Added blur effect
-        flexDirection: 'column',
+    addButton: {
+        backgroundColor: 'white',
+        borderColor: 'green',
+        borderWidth: 2,
+        padding: 10,
+        marginBottom: 20,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    button: {
-        backgroundColor: '#D50A0A',
-        borderRadius: 5,
-        position: 'absolute',
-        width: '50%',
-        height: 40,
-        top: '50%'
-    },
-    buttonText: {
-        color: 'white',
+    addButtonText: {
         textAlign: 'center',
-        top: 11,
-        textDecorationLine: 'none',
+        color: 'green',
+        fontWeight: 'bold',
+        marginRight: 5,
     },
-    scrollContainer: {
-        flex: 1,
-    }
+    noItemsText: {
+        textAlign: 'center',
+        color: 'white',
+        marginTop: 20,
+    },
 });

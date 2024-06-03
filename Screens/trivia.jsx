@@ -1,50 +1,60 @@
+import React from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
-import React from 'react'
+import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
 export default function Competition() {
     const navigation = useNavigation();
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.container}>
-                <View style={styles.menu}>
-                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
+        <LinearGradient
+            colors={['#202B3D', '#121521']}
+            start={[1, 0]}
+            end={[1, 1]}
+            style={styles.gradient}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.container}>
+                    <View style={styles.menu}>
+                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                            <Image
+                                source={require('../assets/menu.png')}
+                                style={styles.menuButton}
+                            />
+                        </TouchableOpacity>
                         <Image
-                            source={require('../assets/menu.png')}
-                            style={styles.menuButton}
+                            source={require('../assets/NFLogo.png')}
+                            style={styles.menuLogo}
                         />
-                    </TouchableOpacity>
-                    <Image
-                        source={require('../assets/NFLogo.png')}
-                        style={styles.menuLogo}
-                    />
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
+    gradient: {
+        flex: 1,
+    },
     container: {
-        backgroundColor: '#111720',
-        height: '100%',
+        backgroundColor: 'transparent',
+        flex: 1,
     },
     menu: {
         top: 80,
         flexDirection: 'row',
-
     },
     menuButton: {
         width: 25,
         height: 25,
         marginLeft: 40,
-        top: 8
+        top: 8,
     },
     menuLogo: {
         width: 50,
         height: 50,
-        marginLeft: 'auto',  // Align to the right
+        marginLeft: 'auto',
         marginRight: 30,
     },
     search: {
@@ -60,6 +70,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
+    shadow: {
+        shadowColor: 'black',
+        shadowOffset: { width: 4, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+    },
     searchImage: {
         width: 30,
         height: 30,
@@ -69,7 +85,7 @@ const styles = StyleSheet.create({
         color: 'white',
         marginLeft: "6%",
         fontSize: 18,
-        opacity: 0.5
+        opacity: 0.5,
     },
     line: {
         borderBottomColor: 'white',
@@ -77,7 +93,7 @@ const styles = StyleSheet.create({
         width: 2,
         marginRight: 'auto',
         marginLeft: "45%",
-        opacity: 0.3
+        opacity: 0.3,
     },
     micImage: {
         width: 25,
@@ -85,7 +101,7 @@ const styles = StyleSheet.create({
         marginLeft: 18,
         opacity: 0.6,
         marginLeft: 'auto',
-        marginRight: "9%"
+        marginRight: "9%",
     },
     cards1: {
         height: 350,
@@ -94,13 +110,12 @@ const styles = StyleSheet.create({
         marginLeft: '10%',
         borderRadius: 20,
         alignItems: 'center',
-
     },
     header: {
         color: 'white',
         fontSize: 20,
         textAlign: 'center',
-        fontFamily: 'Verdana'
+        fontFamily: 'Verdana',
     },
     cards2: {
         height: '110%',
@@ -112,7 +127,6 @@ const styles = StyleSheet.create({
         width: '95%',
         height: 435,
         marginLeft: 'auto',
-
     },
     info1: {
         position: 'absolute',
@@ -120,7 +134,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         width: '100%',
         textAlign: 'center',
-        top: '15%'
+        top: '15%',
     },
     comptetition: {
         width: '100%',
@@ -129,7 +143,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         borderRadius: 20,
         top: '70%',
-        filter: 'blur(50px)', // Added blur effect
+        filter: 'blur(50px)',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
@@ -140,7 +154,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: '50%',
         height: 40,
-        top: '50%'
+        top: '50%',
     },
     buttonText: {
         color: 'white',
@@ -149,6 +163,6 @@ const styles = StyleSheet.create({
         textDecorationLine: 'none',
     },
     scrollContainer: {
-        flex: 1,
-    }
+        flexGrow: 1,
+    },
 });

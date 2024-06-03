@@ -15,6 +15,7 @@ import Login from './Screens/login';
 import Competition from './Screens/competition';
 import Trivia from './Screens/trivia';
 import Leaderboard from './Screens/leaderboard';
+import JoinUs from './Screens/JoinUs'; // Make sure the import path is correct
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -58,6 +59,16 @@ const DrawerContent = () => (
   >
     <Drawer.Screen name="Home" component={HomeScreen} />
     <Drawer.Screen name="Competition" component={Competition} />
+    <Drawer.Screen name="JoinUs" component={JoinUs} options={({ navigation }) => ({
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.navigate('Competition')}>
+          <Text>Back</Text>
+        </TouchableOpacity>
+      ),
+      headerLeftContainerStyle: {
+        paddingLeft: 10,
+      }
+    })} />
     <Drawer.Screen name="Trivia" component={Trivia} />
     <Drawer.Screen name="Leaderboard" component={Leaderboard} />
   </Drawer.Navigator>
@@ -137,7 +148,7 @@ const styles = StyleSheet.create({
     margin: 20,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: '200%'
+    marginTop: '180%'
   },
   signOutButtonText: {
     color: 'white',

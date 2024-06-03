@@ -7,93 +7,99 @@ const HomeScreen = () => {
     const navigation = useNavigation();
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.container}>
-                <View style={styles.menu}>
-                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                        <Image
-                            source={require('../assets/menu.png')}
-                            style={styles.menuButton}
-                        />
-                    </TouchableOpacity>
-                    <Image
-                        source={require('../assets/NFLogo.png')}
-                        style={styles.menuLogo}
-                    />
-                </View>
-                {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text>Feed Screen</Text>
-                    <Button title="Open drawer" onPress={() => navigation.openDrawer()} />
-                    <Button title="Toggle drawer" onPress={() => navigation.toggleDrawer()} />
-                </View> */}
-                <View>
-                    <LinearGradient
-                        start={[0, 1]}
-                        end={[1, 0]}
-                        colors={['#161D26', '#111720']}
-                        style={styles.search}>
-                        <Image
-                            source={require('../assets/search.png')}
-                            style={styles.searchImage}
-                        />
-                        <Text style={styles.text}>Search</Text>
-                        <View style={styles.line}></View>
-                        <Image
-                            source={require('../assets/mic.png')}
-                            style={styles.micImage}
-                        />
-                    </LinearGradient>
-                </View>
-                <View style={styles.cards1}>
-                    <Text style={styles.header}>
-                        Thriving NFL Spotlight
-                    </Text>
-                    <View style={styles.cards2}>
-                        <LinearGradient
-                            start={[1, 0.5]}
-                            end={[1, 0]}
-                            colors={['#161D26', '#111720']}
-                            style={styles.cards2}>
+        <LinearGradient
+            colors={['#202B3D', '#121521']}
+            start={[1, 0]}
+            end={[1, 1]}
+            style={styles.gradient}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.container}>
+                    <View style={styles.menu}>
+                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
                             <Image
-                                source={require('../assets/Green.png')}
-                                style={styles.footballer}
+                                source={require('../assets/menu.png')}
+                                style={styles.menuButton}
                             />
-
-                            <View style={styles.comptetition}>
-                                <Text style={styles.info1}>Live Comentary</Text>
-                                <TouchableOpacity  onPress={() => navigation.navigate('Competition')} style={styles.button}>
-                                    <Text title="Sign Up" style={styles.buttonText}>Join Us</Text>
-                                </TouchableOpacity>
-                            </View>
-
+                        </TouchableOpacity>
+                        <Image
+                            source={require('../assets/NFLogo.png')}
+                            style={styles.menuLogo}
+                        />
+                    </View>
+                    <View style={styles.shadow}>
+                        <LinearGradient
+                            start={[0, 1]}
+                            end={[1, 0]}
+                            intensity={50}
+                            colors={['#202B3D', '#202B3D']}
+                            style={styles.search}                
+                                    >
+                            <Image
+                                source={require('../assets/search.png')}
+                                style={styles.searchImage}
+                            />
+                            <Text style={styles.text}>Search</Text>
+                            <View style={styles.line}></View>
+                            <Image
+                                source={require('../assets/mic.png')}
+                                style={styles.micImage}
+                            />
                         </LinearGradient>
                     </View>
+                    <View style={styles.cards1}>
+                        <Text style={styles.header}>
+                            Thriving NFL Spotlight
+                        </Text>
+                        <View style={styles.cards2}>
+                            <LinearGradient
+                                start={[1, 0.5]}
+                                end={[1, 0]}
+                                colors={['#161D26', '#111720']}
+                                style={styles.cards2}
+                            >
+                                <Image
+                                    source={require('../assets/Green.png')}
+                                    style={styles.footballer}
+                                />
+
+                                <View style={styles.comptetition}>
+                                    <Text style={styles.info1}>Live Comentary</Text>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Competition')} style={styles.button}>
+                                        <Text title="Sign Up" style={styles.buttonText}>Join Us</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </LinearGradient>
+                        </View>
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
+    gradient: {
+        flex: 1,
+    },
     container: {
-        backgroundColor: '#111720',
-        height: '100%',
+        backgroundColor: 'transparent',
+        flex: 1,
     },
     menu: {
         top: 80,
         flexDirection: 'row',
-
     },
     menuButton: {
         width: 25,
         height: 25,
-        marginLeft: 40,
-        top: 8
+        marginLeft: 30,
+        top: 8,
     },
     menuLogo: {
         width: 50,
         height: 50,
-        marginLeft: 'auto',  // Align to the right
+        marginLeft: 'auto',
         marginRight: 30,
     },
     search: {
@@ -109,6 +115,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
+    shadow: {
+        shadowColor: 'black',
+        shadowOffset: { width: 4, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+      },
     searchImage: {
         width: 30,
         height: 30,
@@ -118,7 +130,7 @@ const styles = StyleSheet.create({
         color: 'white',
         marginLeft: "6%",
         fontSize: 18,
-        opacity: 0.5
+        opacity: 0.5,
     },
     line: {
         borderBottomColor: 'white',
@@ -126,7 +138,7 @@ const styles = StyleSheet.create({
         width: 2,
         marginRight: 'auto',
         marginLeft: "45%",
-        opacity: 0.3
+        opacity: 0.3,
     },
     micImage: {
         width: 25,
@@ -134,7 +146,7 @@ const styles = StyleSheet.create({
         marginLeft: 18,
         opacity: 0.6,
         marginLeft: 'auto',
-        marginRight: "9%"
+        marginRight: "9%",
     },
     cards1: {
         height: 350,
@@ -143,13 +155,12 @@ const styles = StyleSheet.create({
         marginLeft: '10%',
         borderRadius: 20,
         alignItems: 'center',
-
     },
     header: {
         color: 'white',
         fontSize: 20,
         textAlign: 'center',
-        fontFamily: 'Verdana'
+        fontFamily: 'Verdana',
     },
     cards2: {
         height: '110%',
@@ -161,7 +172,6 @@ const styles = StyleSheet.create({
         width: '95%',
         height: 435,
         marginLeft: 'auto',
-
     },
     info1: {
         position: 'absolute',
@@ -169,7 +179,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         width: '100%',
         textAlign: 'center',
-        top: '15%'
+        top: '15%',
     },
     comptetition: {
         width: '100%',
@@ -178,7 +188,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         borderRadius: 20,
         top: '70%',
-        filter: 'blur(50px)', // Added blur effect
+        filter: 'blur(50px)',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
@@ -189,7 +199,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: '50%',
         height: 40,
-        top: '50%'
+        top: '50%',
     },
     buttonText: {
         color: 'white',
@@ -198,8 +208,8 @@ const styles = StyleSheet.create({
         textDecorationLine: 'none',
     },
     scrollContainer: {
-        flex: 1,
-    }
+        flexGrow: 1,
+    },
 });
 
 export default HomeScreen;
