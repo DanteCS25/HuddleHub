@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
@@ -33,13 +33,17 @@ const HomeScreen = () => {
                             end={[1, 0]}
                             intensity={50}
                             colors={['#202B3D', '#202B3D']}
-                            style={styles.search}                
-                                    >
+                            style={styles.search}
+                        >
                             <Image
                                 source={require('../assets/search.png')}
                                 style={styles.searchImage}
                             />
-                            <Text style={styles.text}>Search</Text>
+                            <TextInput
+                                placeholder="Search"
+                                placeholderTextColor="white"
+                                style={styles.textInput}
+                            />
                             <View style={styles.line}></View>
                             <Image
                                 source={require('../assets/mic.png')}
@@ -103,24 +107,24 @@ const styles = StyleSheet.create({
         marginRight: 30,
     },
     search: {
-        marginLeft: 30,
-        width: "90%",
+        width: "85%", // Adjust width as needed
         height: 60,
         borderRadius: 10,
-        top: 110,
+        top: 110, // Adjust vertical position as needed
         shadowColor: 'black',
         shadowOffset: { width: 4, height: 4 },
         shadowOpacity: 2.0,
         shadowRadius: 3,
         flexDirection: 'row',
         alignItems: 'center',
+        alignSelf: 'center', // Center horizontally
     },
     shadow: {
         shadowColor: 'black',
         shadowOffset: { width: 4, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-      },
+    },
     searchImage: {
         width: 30,
         height: 30,
@@ -132,12 +136,18 @@ const styles = StyleSheet.create({
         fontSize: 18,
         opacity: 0.5,
     },
+    textInput: {
+        color: 'white',
+        marginLeft: "6%",
+        fontSize: 18,
+        opacity: 0.5,
+        flex: 1,
+    },
     line: {
         borderBottomColor: 'white',
         borderBottomWidth: 20,
         width: 2,
-        marginRight: 'auto',
-        marginLeft: "45%",
+        marginRight: "4%",
         opacity: 0.3,
     },
     micImage: {
@@ -146,7 +156,7 @@ const styles = StyleSheet.create({
         marginLeft: 18,
         opacity: 0.6,
         marginLeft: 'auto',
-        marginRight: "9%",
+        marginRight: "6%",
     },
     cards1: {
         height: 350,

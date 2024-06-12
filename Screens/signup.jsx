@@ -1,6 +1,6 @@
-import { StyleSheet, View, Text, Image, TextInput, Button, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { handleSignUp } from '../services/createAuth';
 import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
 
@@ -38,7 +38,6 @@ export default function SignUp() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    //   TODO: Signup Function
     const signup = () => {
         handleSignUp(email, password)
     }
@@ -56,19 +55,34 @@ export default function SignUp() {
             <Text style={styles.text}>Get Registered</Text>
 
             <View style={styles.inputcontainer}>
-                <TextInput placeholder="Username" style={styles.input} placeholderTextColor="white" />
-                <TextInput placeholder="Email" style={styles.input} placeholderTextColor="white" onChangeText={newEmail => setEmail(newEmail)} />
-                <TextInput placeholder="Password" secureTextEntry={true} style={styles.input} placeholderTextColor="white" onChangeText={newPassword => setPassword(newPassword)} />
+                <TextInput
+                    placeholder="Username"
+                    style={styles.input}
+                    placeholderTextColor="white"
+                />
+                <TextInput
+                    placeholder="Email"
+                    style={styles.input}
+                    placeholderTextColor="white"
+                    onChangeText={newEmail => setEmail(newEmail)}
+                />
+                <TextInput
+                    placeholder="Password"
+                    secureTextEntry={true}
+                    style={styles.input}
+                    placeholderTextColor="white"
+                    onChangeText={newPassword => setPassword(newPassword)}
+                />
             </View>
             
             <View style={styles.button}>
                 <TouchableOpacity onPress={signup}>
-                    <Text title="Sign Up" style={styles.buttonText}>Sign Up</Text>
+                    <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
 
             <TouchableOpacity onPress={navigateToLogin} style={styles.login}>
-            <Text style={[styles.loginText, { color: 'white' }]}>Already have an account</Text>
+                <Text style={[styles.loginText, { color: 'white' }]}>Already have an account</Text>
                 <Text style={[styles.loginText, { color: '#D50A0A' }]}> Sign In</Text>
             </TouchableOpacity>
 
@@ -89,56 +103,75 @@ export default function SignUp() {
 // Styling
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'column',
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        position: 'relative',
     },
     backgroundImage: {
+        position: 'absolute',
         resizeMode: 'cover',
-        justifyContent: 'center',
-        height: "100%",
+        height: '100%',
         width: '100%',
-        zIndex: 0,
+        zIndex: -1,
     },
     logo: {
         width: 150,
         height: 150,
-        position: 'absolute',
-        top: 100,
-        alignSelf: 'center',
+        marginBottom: 20,
     },
     text: {
         color: 'white',
         fontSize: 24,
         fontWeight: 'bold',
-        position: 'absolute',
-        top: 300,
-        left: 40,
-        fontFamily: 'Verdana',
+        marginBottom: 20,
         textAlign: 'center',
     },
     inputcontainer: {
-        top: 330,
-        position: 'absolute',
-        width: '100%',
-        left: 40,
-        color: 'white'
+        width: '80%',
+        alignItems: 'center',
     },
     input: {
         height: 40,
         borderWidth: 1,
-        padding: 20,
-        width: '80%',
-        top: 40,
+        paddingHorizontal: 10,
+        width: '100%',
         marginBottom: 20,
         color: 'white',
         borderRadius: 8,
         borderColor: 'grey',
-        color: 'white'
+    },
+    button: {
+        backgroundColor: '#D50A0A',
+        borderRadius: 5,
+        width: '80%',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
+    buttonText: {
+        color: 'white',
+        textAlign: 'center',
+    },
+    login: {
+        flexDirection: 'row',
+        marginBottom: 20,
+    },
+    loginText: {
+        fontSize: 15,
+    },
+    line: {
+        borderBottomColor: 'white',
+        borderBottomWidth: 1,
+        width: '80%',
+        marginBottom: 10,
+    },
+    other: {
+        color: 'white',
+        marginBottom: 20,
     },
     loginButton: {
-        position: 'absolute',
-        top: 740,
         flexDirection: 'row',
     },
     loginBut: {
@@ -146,38 +179,4 @@ const styles = StyleSheet.create({
         height: 80,
         borderColor: 'red',
     },
-    other: {
-        position: 'absolute',
-        color: 'white',
-        top: 700
-    },
-    button: {
-        backgroundColor: '#D50A0A',
-        borderRadius: 5,
-        position: 'absolute',
-        width: '80%',
-        height: 40,
-        top: 570,
-    },
-    buttonText: {
-        color: 'white',
-        textAlign: 'center',
-        top: 11,
-        textDecorationLine: 'none',
-    },
-    login: {
-        position: 'absolute',
-        color: 'white',
-        fontSize: 15,
-        top: 630,
-        flexDirection: 'row',
-    },
-    line: {
-        borderBottomColor: 'white',
-        borderBottomWidth: 1,
-        width: '80%',
-        marginBottom: 10,
-        position: 'absolute',
-        top: 680
-    }
 });

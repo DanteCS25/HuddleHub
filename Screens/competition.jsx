@@ -1,15 +1,16 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { getCompUser } from '../services/dbService';
 import { AntDesign } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
+// import { useNavigation } from '@react-navigation/native';
+// import firestore from '@react-native-firebase/firestore';
 
 export default function Competition() {
     const navigation = useNavigation();
-    const [CompUsers, setCompUsers] = useState([]);
+    const [compUsers, setCompUsers] = useState([]);
 
     useFocusEffect(
         useCallback(() => {
@@ -23,6 +24,16 @@ export default function Competition() {
     const handleGettingOfData = async () => {
         const allData = await getCompUser();
         setCompUsers(allData);
+    };
+
+    // Update the handlePressListen function to navigate to 'DetailsPage'
+    const handlePressListen = async (itemId) => {
+        const item = compUsers.find(user => user.id === itemId);
+        if (item) {
+            navigation.navigate('DetailsPage', { item });
+        } else {
+            console.log("Item not found");
+        }
     };
 
     return (
@@ -55,15 +66,31 @@ export default function Competition() {
                             <TouchableOpacity style={styles.signOutButton} onPress={() => navigation.navigate('JoinUs')}>
                                 <Text style={styles.signOutButtonText}>Join Us</Text>
                             </TouchableOpacity>
-                            
                         </View>
                     </BlurView>
                     <SafeAreaView style={styles.dataContainer}>
-                        {CompUsers.length > 0 ? (
-                            CompUsers.map((item, index) => (
-                                <TouchableOpacity key={index} style={styles.card} onPress={() => navigation.navigate("Details")}>
-                                    <Text>{item.title}</Text>
-                                    {item.priority ? <AntDesign name="star" size={24} color="red" /> : null}
+                        {compUsers.length > 0 ? (
+                            compUsers.map((item, index) => (
+                                <TouchableOpacity key={index} style={styles.card} onPress={() => handlePressListen(item.id)}>
+                                    <LinearGradient
+                                        colors={['#161D26', '#111720']}
+                                        start={[1, 0.5]}
+                                        end={[1, 0]}
+                                        style={styles.cardBackground}
+                                    >
+                                        <View style={styles.cardContent}>
+                                            <Text style={styles.cardTitle}>{item.title}</Text>
+                                            <Text style={styles.cardDescription}>{item.description}</Text>
+                                            {item.priority ? <AntDesign name="star" size={24} color="red" /> : null}
+                                            <TouchableOpacity
+                                                style={styles.listenButton}
+                                                onPress={() => handlePressListen(item.id)}
+                                            >
+                                                <Text style={styles.listenButtonText}>Listen</Text>
+                                                <AntDesign name="arrowright" size={24} color="white" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    </LinearGradient>
                                 </TouchableOpacity>
                             ))
                         ) : (
@@ -113,8 +140,9 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         padding: 20,
         borderRadius: 10,
-        marginTop: '40%',
+        marginTop: '45%',
         overflow: 'hidden',
+        marginBottom: '5%'
     },
     signupInnerContent: {
         flexDirection: 'row',
@@ -149,28 +177,46 @@ const styles = StyleSheet.create({
     },
     card: {
         width: '100%',
-        backgroundColor: 'white',
-        padding: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         marginBottom: 10,
-        borderRadius: 5,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
-    addButton: {
-        backgroundColor: 'white',
-        borderColor: 'green',
-        borderWidth: 2,
+    cardBackground: {
+        borderRadius: 10,
+    },
+    cardContent: {
+        padding: 20,
+    },
+    cardTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    cardDescription: {
+        fontSize: 14,
+        color: '#ccc',
+        marginTop: 5,
+        paddingBottom: 20
+    },
+    listenButton: {
+        backgroundColor: 'red',
         padding: 10,
-        marginBottom: 20,
+        borderRadius: 5,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        marginTop: 10,
     },
-    addButtonText: {
-        textAlign: 'center',
-        color: 'green',
-        fontWeight: 'bold',
+    listenButtonText: {
+        color: 'white',
+        fontSize: 16,
         marginRight: 5,
     },
     noItemsText: {

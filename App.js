@@ -1,12 +1,11 @@
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Pressable } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { auth } from './firebase';
-import { createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth, db } from './firebase'; // Import Firebase services
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import { BlurView } from 'expo-blur';
+import { onAuthStateChanged } from 'firebase/auth';
 
 // Screens
 import HomeScreen from './Screens/home';
@@ -16,35 +15,36 @@ import Competition from './Screens/competition';
 import Trivia from './Screens/trivia';
 import Leaderboard from './Screens/leaderboard';
 import JoinUs from './Screens/JoinUs'; // Make sure the import path is correct
+import DetailsPage from './Screens/DetailsPage'; // Import the DetailsPage component
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-const handleSignOut = () => {
-    signOut(auth)
-        .then(() => {
-            console.log("User signed out successfully");
-        })
-        .catch((error) => {
-            console.log(error.message);
-        });
+const handleSignOut = async () => {
+    try {
+        await auth.signOut();
+        navigation.navigate('Login'); // Assuming 'Login' is your login screen
+    } catch (error) {
+        console.error('Sign out error:', error);
+    }
 };
 
 const CustomDrawerContent = (props) => (
   <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContent}>
-    <BlurView intensity={50} style={StyleSheet.absoluteFill}>
+    <View style={styles.drawerBackground}>
       <View style={styles.drawerHeader}>
         <Text style={styles.drawerHeaderText}>HuddleHub</Text>
       </View>
       <DrawerItemList {...props} />
+      <View style={styles.bottomSpacer}></View>
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
         <Text style={styles.signOutButtonText}>Sign Out</Text>
       </TouchableOpacity>
-    </BlurView>
+    </View>
   </DrawerContentScrollView>
 );
 
-const DrawerContent = () => (
+const DrawerContent = ({ setDrawerOpen }) => (
   <Drawer.Navigator
     initialRouteName="Home"
     drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -55,11 +55,14 @@ const DrawerContent = () => (
       drawerActiveTintColor: 'white',
       drawerActiveBackgroundColor: 'red',
       drawerInactiveTintColor: 'grey',
+      overlayColor: 'transparent',
     }}
+    onDrawerOpen={() => setDrawerOpen(true)}
+    onDrawerClose={() => setDrawerOpen(false)}
   >
     <Drawer.Screen name="Home" component={HomeScreen} />
     <Drawer.Screen name="Competition" component={Competition} />
-    <Drawer.Screen name="JoinUs" component={JoinUs} options={({ navigation }) => ({
+    <Drawer.Screen name="Join Us" component={JoinUs} options={({ navigation }) => ({
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.navigate('Competition')}>
           <Text>Back</Text>
@@ -74,19 +77,31 @@ const DrawerContent = () => (
   </Drawer.Navigator>
 );
 
+const AppNavigator = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="DetailsPage" component={DetailsPage} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log('User Logged In...' + user.email);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        console.log('User is logged in:', currentUser);
         setLoggedIn(true);
       } else {
-        console.log('No User logged in...');
+        console.log('No user is logged in');
         setLoggedIn(false); // Update the state to reflect user sign-out
       }
     });
@@ -107,11 +122,17 @@ export default function App() {
   return (
     <NavigationContainer>
       {loggedIn ? (
-        <DrawerContent />
+        <View style={{ flex: 1 }}>
+          {drawerOpen && (
+            <Pressable style={styles.overlay} onPress={() => setDrawerOpen(false)} />
+          )}
+          <DrawerContent setDrawerOpen={setDrawerOpen} />
+        </View>
       ) : (
         <Stack.Navigator initialRouteName="SignUp" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="DetailsPage" component={DetailsPage} />
         </Stack.Navigator>
       )}
       <StatusBar style="light" />
@@ -133,8 +154,12 @@ const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
   },
+  drawerBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 1)', // Darker, semi-transparent background
+  },
   drawerHeader: {
-    marginTop: '20%',
+    marginTop: '12%',
     padding: 20,
   },
   drawerHeaderText: {
@@ -142,17 +167,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  bottomSpacer: {
+    flex: 1,
+  },
   signOutButton: {
     backgroundColor: 'red',
     padding: 15,
     margin: 20,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: '180%'
   },
   signOutButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 });
