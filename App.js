@@ -74,6 +74,7 @@ const DrawerContent = ({ setDrawerOpen }) => (
     })} />
     <Drawer.Screen name="Trivia" component={Trivia} />
     <Drawer.Screen name="Leaderboard" component={Leaderboard} />
+    <Drawer.Screen name="DetailsPage" component={DetailsPage} />
   </Drawer.Navigator>
 );
 
