@@ -1,169 +1,108 @@
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
-import React from 'react'
-import { LinearGradient } from 'expo-linear-gradient';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { db } from '../firebase'; // Ensure you have your Firebase configuration here
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 
 export default function Leaderboard() {
-    const navigation = useNavigation();
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const likesSnapshot = await getDocs(collection(db, 'likes'));
+                const itemsArray = await Promise.all(
+                    likesSnapshot.docs.map(async docSnapshot => {
+                        const data = docSnapshot.data();
+                        const itemDoc = await getDoc(doc(db, 'items', data.itemId));
+                        const itemData = itemDoc.exists() ? itemDoc.data() : { title: 'Unknown' };
+                        return {
+                            id: docSnapshot.id,
+                            itemId: data.itemId,
+                            likes: data.likes,
+                            title: itemData.title,
+                        };
+                    })
+                );
+                // Sort items by title in ascending order and likes in descending order
+                const sortedItems = [...itemsArray].sort((a, b) => {
+                    if (a.title === b.title) {
+                        return b.likes - a.likes;
+                    }
+                    return a.title.localeCompare(b.title);
+                });
+                setItems(sortedItems);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching items from Firestore:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchItems();
+    }, []);
+
+    if (loading) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (!items || items.length === 0) {
+        return <Text>No items available</Text>;
+    }
 
     return (
-        <LinearGradient
-            colors={['#202B3D', '#121521']}
-            start={[1, 0]}
-            end={[1, 1]}
-            style={styles.gradient}
-        >
+        <View style={styles.container}>
+            <Text style={styles.header}>Leaderboard</Text>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.container}>
-                    <View style={styles.menu}>
-                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                            <Image
-                                source={require('../assets/menu.png')}
-                                style={styles.menuButton}
-                            />
-                        </TouchableOpacity>
-                        <Image
-                            source={require('../assets/NFLogo.png')}
-                            style={styles.menuLogo}
-                        />
+                {items.map((item, index) => (
+                    <View key={item.id} style={styles.card}>
+                        <Text style={styles.rank}>{index + 1}</Text>
+                        <Text style={styles.title}>{item.title}</Text>
+                        <Text style={styles.likes}>Likes: {item.likes}</Text>
                     </View>
-                </View>
+                ))}
             </ScrollView>
-        </LinearGradient>
+        </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
-    gradient: {
-        flex: 1,
-    },
     container: {
-        backgroundColor: 'transparent',
         flex: 1,
-    },
-    menu: {
-        top: 80,
-        flexDirection: 'row',
-    },
-    menuButton: {
-        width: 25,
-        height: 25,
-        marginLeft: 40,
-        top: 8,
-    },
-    menuLogo: {
-        width: 50,
-        height: 50,
-        marginLeft: 'auto',
-        marginRight: 30,
-    },
-    search: {
-        marginLeft: 30,
-        width: "90%",
-        height: 60,
-        borderRadius: 10,
-        top: 110,
-        shadowColor: 'black',
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 2.0,
-        shadowRadius: 3,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    shadow: {
-        shadowColor: 'black',
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-    },
-    searchImage: {
-        width: 30,
-        height: 30,
-        marginLeft: "5%",
-    },
-    text: {
-        color: 'white',
-        marginLeft: "6%",
-        fontSize: 18,
-        opacity: 0.5,
-    },
-    line: {
-        borderBottomColor: 'white',
-        borderBottomWidth: 20,
-        width: 2,
-        marginRight: 'auto',
-        marginLeft: "45%",
-        opacity: 0.3,
-    },
-    micImage: {
-        width: 25,
-        height: 25,
-        marginLeft: 18,
-        opacity: 0.6,
-        marginLeft: 'auto',
-        marginRight: "9%",
-    },
-    cards1: {
-        height: 350,
-        width: '80%',
-        top: 150,
-        marginLeft: '10%',
-        borderRadius: 20,
-        alignItems: 'center',
+        backgroundColor: '#111720',
+        padding: 20,
     },
     header: {
         color: 'white',
-        fontSize: 20,
+        fontSize: 24,
         textAlign: 'center',
-        fontFamily: 'Verdana',
-    },
-    cards2: {
-        height: '110%',
-        width: '100%',
-        borderRadius: 20,
-        top: '5%',
-    },
-    footballer: {
-        width: '95%',
-        height: 435,
-        marginLeft: 'auto',
-    },
-    info1: {
-        position: 'absolute',
-        color: 'white',
-        fontSize: 20,
-        width: '100%',
-        textAlign: 'center',
-        top: '15%',
-    },
-    comptetition: {
-        width: '100%',
-        height: 130,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        position: 'absolute',
-        borderRadius: 20,
-        top: '70%',
-        filter: 'blur(50px)',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    button: {
-        backgroundColor: '#D50A0A',
-        borderRadius: 5,
-        position: 'absolute',
-        width: '50%',
-        height: 40,
-        top: '50%',
-    },
-    buttonText: {
-        color: 'white',
-        textAlign: 'center',
-        top: 11,
-        textDecorationLine: 'none',
+        marginBottom: 20,
+        fontWeight: 'bold',
     },
     scrollContainer: {
         flexGrow: 1,
+    },
+    card: {
+        backgroundColor: 'rgba(40, 40, 40, 0.85)',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    rank: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginRight: 10,
+    },
+    title: {
+        color: 'white',
+        fontSize: 18,
+        flex: 1,
+    },
+    likes: {
+        color: 'white',
+        fontSize: 16,
     },
 });

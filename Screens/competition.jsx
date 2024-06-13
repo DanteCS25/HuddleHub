@@ -30,7 +30,7 @@ export default function Competition() {
     const handlePressListen = async (itemId) => {
         const item = compUsers.find(user => user.id === itemId);
         if (item) {
-            navigation.navigate('DetailsPage', { item });
+            navigation.navigate('DetailsPage', { item: item });
         } else {
             console.log("Item not found");
         }

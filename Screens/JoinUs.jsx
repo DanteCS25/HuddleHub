@@ -17,7 +17,6 @@ const CreateScreen = ({ navigation }) => {
     const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
-        // Effect to update recording duration every second
         let interval;
         if (isRecording) {
             interval = setInterval(() => {
@@ -29,36 +28,26 @@ const CreateScreen = ({ navigation }) => {
         return () => clearInterval(interval);
     }, [isRecording]);
 
-    useEffect(() => {
-        // Your effect code here
-    }, [image]); // Include image in the dependency array
-
     const handleCreation = async () => {
-        // Ensure image is selected before creating the user
-        console.log('Current image URI:', image); // Ensure this log is showing the expected URI
         if (!image) {
             console.error('Image not selected.');
             return;
         }
     
-        // Create user object with entered data
         const user = {
             title,
             priority,
             due,
             description,
             image,
-            recording: recording ? recording.getURI() : null, // Store only the URI of the recording
+            recording: recording ? recording.getURI() : null,
             isCompleted: false
         };
     
-        // Call createNewCompUser function with user object
         const success = await createNewCompUser(user);
         if (success) {
-            // Navigate to the competition page
             navigation.navigate('Competition');
         } else {
-            // Handle error
             console.error('Error creating competition');
         }
     };
@@ -81,15 +70,13 @@ const CreateScreen = ({ navigation }) => {
 
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,  // Set this to false to not force users to edit the photo
+            allowsEditing: false,
             aspect: [4, 3],
             quality: 1,
         });
 
-        console.log('Image picker result:', result); // Add this to inspect the result object
         if (!result.cancelled && result.assets && result.assets.length > 0) {
             setImage(result.assets[0].uri);
-            console.log('Set image URI:', result.assets[0].uri);
         } else {
             console.error('No URI found in result or operation cancelled');
         }
@@ -97,19 +84,15 @@ const CreateScreen = ({ navigation }) => {
     
     const startRecording = async () => {
         try {
-            // Request audio recording permissions
             await Audio.requestPermissionsAsync();
-            // Set audio recording mode
             await Audio.setAudioModeAsync({
                 allowsRecordingIOS: true,
                 playsInSilentModeIOS: true,
             });
 
-            // Create a new recording instance
             const recording = new Audio.Recording();
             await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
             await recording.startAsync();
-            // Set the recording instance
             setRecording(recording);
             setIsRecording(true);
         } catch (err) {
@@ -121,8 +104,6 @@ const CreateScreen = ({ navigation }) => {
         setIsRecording(false);
         await recording.stopAndUnloadAsync();
         const uri = recording.getURI();
-        console.log('Recording stopped and stored at', uri);
-        // Load recorded sound for playback
         const { sound } = await Audio.Sound.createAsync({ uri });
         setSound(sound);
     };
@@ -153,71 +134,70 @@ const CreateScreen = ({ navigation }) => {
         <SafeAreaView style={styles.safeArea}>
             <ImageBackground source={require('../assets/background.jpg')} style={styles.backgroundImage}>
                 <View style={styles.container}>
-
+                    <View>
                         <Text style={styles.joinText}>Join the</Text>
-                        <Text style={ styles.huddleText}>Huddle</Text>
+                        <Text style={styles.huddleText}>Huddle</Text>
 
+                        <TextInput
+                            style={styles.inputField}
+                            placeholder="Commentary Title"
+                            placeholderTextColor="white"
+                            onChangeText={newText => setTitle(newText)}
+                            value={title}
+                        />
 
-                    <TextInput
-                        style={styles.inputField}
-                        placeholder="Commentary Title"
-                        placeholderTextColor="white"
-                        onChangeText={newText => setTitle(newText)}
-                        value={title}
-                    />
+                        <TextInput
+                            style={styles.inputField}
+                            placeholder="Your NFL Team"
+                            placeholderTextColor="white"
+                            onChangeText={newText => setDue(newText)}
+                            value={due}
+                        />
 
-                    <TextInput
-                        style={styles.inputField}
-                        placeholder="Your NFL Team"
-                        placeholderTextColor="white"
-                        onChangeText={newText => setDue(newText)}
-                        value={due}
-                    />
+                        <TextInput
+                            multiline
+                            numberOfLines={4}
+                            style={styles.inputField}
+                            placeholder="Description of your commentary style"
+                            placeholderTextColor="white"
+                            onChangeText={newText => setDescription(newText)}
+                            value={description}
+                        />
 
-                    <TextInput
-                        multiline
-                        numberOfLines={4}
-                        style={styles.inputField}
-                        placeholder="Description of your commentary style"
-                        placeholderTextColor="white"
-                        onChangeText={newText => setDescription(newText)}
-                        value={description}
-                    />
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity style={styles.button} onPress={pickImage}>
+                                <Text style={styles.buttonText}>Pick an image</Text>
+                            </TouchableOpacity>
 
-                    <View style={styles.buttonRow}>
-                        <TouchableOpacity style={styles.button} onPress={pickImage}>
-                            <Text style={styles.buttonText}>Pick an image</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.button} onPress={isRecording ? stopRecording : startRecording}>
-                            <Text style={styles.buttonText}>{isRecording ? 'Stop recording' : 'Start recording'}</Text>
-                        </TouchableOpacity>                   
-                    </View>
-
-                    {image && <Image source={{ uri: image }} style={{ width: 80, height: 80 }} />}
-
-                    {isRecording && (
-                        <View style={styles.recordingContainer}>
-                            <Text style={styles.recordingText}>Recording...</Text>
-                            <View style={styles.soundWave} />
-                            <Text style={styles.durationText}>{`${Math.floor(recordingDuration / 60)}:${recordingDuration % 60}`
-                        }</Text>
-                        </View>
-                    )}
-
-                    {sound && (
-                        <View style={styles.recordingContainer}>
-                            <TouchableOpacity style={styles.button} onPress={isPlaying ? stopPlayback : playRecording}>
-                                <Text style={styles.buttonText}>{isPlaying ? 'Stop playback' : 'Play recording'}</Text>
+                            <TouchableOpacity style={styles.button} onPress={isRecording ? stopRecording : startRecording}>
+                                <Text style={styles.buttonText}>{isRecording ? 'Stop recording' : 'Start recording'}</Text>
                             </TouchableOpacity>
                         </View>
-                    )}
 
-                    <TouchableOpacity style={styles.createButton} onPress={handleCreation}>
-                        <Text style={styles.buttonText}>Create Competition Joiner</Text>
-                    </TouchableOpacity>
+                        {image && <Image source={{ uri: image }} style={{ width: 80, height: 80 }} />}
 
-                    
+                        {isRecording && (
+                            <View style={styles.recordingContainer}>
+                                <Text style={styles.recordingText}>Recording...</Text>
+                                <View style={styles.soundWave} />
+                                <Text style={styles.durationText}>{`${Math.floor(recordingDuration / 60)}:${recordingDuration % 60}`}</Text>
+                            </View>
+                        )}
+
+                        {sound && (
+                            <View style={styles.recordingContainer}>
+                                <TouchableOpacity style={styles.button} onPress={isPlaying ? stopPlayback : playRecording}>
+                                    <Text style={styles.buttonText}>{isPlaying ? 'Stop playback' : 'Play recording'}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </View>
+
+                    <View style={styles.bottomButtonContainer}>
+                        <TouchableOpacity style={styles.createButton} onPress={handleCreation}>
+                            <Text style={styles.buttonText}>Create Competition Joiner</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </ImageBackground>
         </SafeAreaView>
@@ -238,21 +218,22 @@ const styles = StyleSheet.create({
         zIndex: -1,
     },
     container: {
-        padding: 20,
         flex: 1,
+        padding: 20,
+        justifyContent: 'space-between', // Ensure the content is spaced between
     },
     joinText: {
         textAlign: 'center',
-        letterSpacing: 5, // Add letter spacing
+        letterSpacing: 5,
         color: 'white',
         fontSize: 30,
-        marginTop: '20%'
+        marginTop: '20%',
     },
     huddleText: {
-        color: '#D50A0A', // Different color for "Huddle"
+        color: '#D50A0A',
         fontSize: 60,
         textAlign: 'center',
-        marginBottom: '20%'
+        marginBottom: '10%',
     },
     inputField: {
         borderWidth: 1,
@@ -278,9 +259,11 @@ const styles = StyleSheet.create({
     createButton: {
         backgroundColor: '#D50A0A',
         padding: 15,
-        marginTop: '40%',
-        marginHorizontal: 5,
         borderRadius: 5,
+    },
+    bottomButtonContainer: {
+        justifyContent: 'flex-end',
+        marginBottom: 20,
     },
     buttonText: {
         textAlign: 'center',
@@ -290,6 +273,7 @@ const styles = StyleSheet.create({
     recordingContainer: {
         alignItems: 'center',
         marginTop: 20,
+        height: 50,
     },
     recordingText: {
         color: 'red',
@@ -305,6 +289,5 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 16,
         color: 'white',
-    }
+    },
 });
-
