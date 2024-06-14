@@ -20,10 +20,10 @@ import DetailsPage from './Screens/DetailsPage'; // Import the DetailsPage compo
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-const handleSignOut = async () => {
+const handleSignOut = async (navigation) => {
     try {
         await auth.signOut();
-        navigation.navigate('Login'); // Assuming 'Login' is your login screen
+        navigation.navigate('Login');
     } catch (error) {
         console.error('Sign out error:', error);
     }
@@ -37,7 +37,7 @@ const CustomDrawerContent = (props) => (
       </View>
       <DrawerItemList {...props} />
       <View style={styles.bottomSpacer}></View>
-      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+      <TouchableOpacity style={styles.signOutButton} onPress={() => handleSignOut(props.navigation)}>
         <Text style={styles.signOutButtonText}>Sign Out</Text>
       </TouchableOpacity>
     </View>
@@ -84,6 +84,7 @@ const AppNavigator = () => {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="DetailsPage" component={DetailsPage} />
+        <Stack.Screen name="Login" component={Login} /> {/* Added this line for the 'Login' screen */}
       </Stack.Navigator>
     </NavigationContainer>
   );

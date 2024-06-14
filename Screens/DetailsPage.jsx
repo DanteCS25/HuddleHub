@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, TextInput, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, TextInput, FlatList, StyleSheet, Modal } from 'react-native';
 import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { db } from '../firebase';
-import { addDoc, collection } from 'firebase/firestore'; // Import addDoc and collection
+import { addDoc, collection } from 'firebase/firestore';
 
 const DetailsPage = ({ route }) => {
     const { item } = route.params;
@@ -12,6 +12,8 @@ const DetailsPage = ({ route }) => {
     const [likes, setLikes] = useState(0);
     const [comment, setComment] = useState('');
     const [comments, setComments] = useState([]);
+    const [mostLikedComment, setMostLikedComment] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const itemKey = `likes_${item.id}`;
 
@@ -54,7 +56,7 @@ const DetailsPage = ({ route }) => {
     const saveComment = async () => {
         try {
             const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            const newCommentObj = { id: comments.length + 1, text: comment, time: currentTime };
+            const newCommentObj = { id: comments.length + 1, text: comment, time: currentTime, likes: 0 }; // Initialize likes to 0
             const updatedComments = [newCommentObj, ...comments]; // New comment added at the top
             await AsyncStorage.setItem(`comments_${item.id}`, JSON.stringify(updatedComments));
             setComments(updatedComments);
@@ -71,6 +73,21 @@ const DetailsPage = ({ route }) => {
             setComments(updatedComments);
         } catch (error) {
             console.error(`Error deleting comment for item ${item.id}`, error);
+        }
+    };
+
+    const likeComment = async (commentId) => {
+        try {
+            const updatedComments = comments.map(comment => {
+                if (comment.id === commentId) {
+                    return { ...comment, likes: comment.likes + 1 };
+                }
+                return comment;
+            });
+            await AsyncStorage.setItem(`comments_${item.id}`, JSON.stringify(updatedComments));
+            setComments(updatedComments);
+        } catch (error) {
+            console.error(`Error liking comment for item ${item.id}`, error);
         }
     };
 
@@ -98,38 +115,54 @@ const DetailsPage = ({ route }) => {
         saveLikes(newLikes);
     };
 
+    const showMostLikedComment = () => {
+        const mostLiked = comments.reduce((max, comment) => (comment.likes > max.likes ? comment : max), comments[0]);
+        setMostLikedComment(mostLiked);
+        setModalVisible(true);
+    };
+
     return (
         <View style={styles.container}>
-            <ScrollView style={styles.commentSection}>
-                <View style={styles.content}>
-                    <Image source={{ uri: item.image }} style={styles.backgroundImage} />
-                    <Text style={styles.title}>{item.title}</Text>
-                    <Text style={styles.description}>{item.description}</Text>
-                    <Text style={styles.team}>{item.due}</Text>
-                    <TouchableOpacity style={styles.button} onPress={playSound}>
-                        <Text style={styles.buttonText}>Play Recording</Text>
-                    </TouchableOpacity>
-                </View>
+            <View style={styles.content}>
+                <Image source={{ uri: item.image }} style={styles.backgroundImage} />
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.team}>{item.due}</Text>
+                <TouchableOpacity style={styles.button} onPress={playSound}>
+                    <Text style={styles.buttonText}>Play Recording</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.actionButtons}>
                 <TouchableOpacity style={styles.likeButton} onPress={incrementLikes}>
                     <Text style={styles.buttonText2}>Like ({likes})</Text>
                 </TouchableOpacity>
-                <FlatList
-                    data={comments}
-                    renderItem={({ item }) => (
-                        <View style={styles.commentContainer}>
-                            <View style={styles.commentTextContainer}>
-                                <Text style={styles.commentText}>{item.text}</Text>
-                                <Text style={styles.commentTime}>{item.time}</Text>
-                            </View>
+                <TouchableOpacity style={styles.showMostLikedButton} onPress={showMostLikedComment}>
+                    <Text style={styles.buttonText2}>Show Most Liked Comment</Text>
+                </TouchableOpacity>
+            </View>
+            <FlatList
+                data={comments}
+                renderItem={({ item }) => (
+                    <View style={styles.commentContainer}>
+                        <View style={styles.commentTextContainer}>
+                            <Text style={styles.commentText}>{item.text}</Text>
+                            <Text style={styles.commentTime}>{item.time}</Text>
+                            <Text style={styles.commentLikes}>Likes: {item.likes}</Text>
+                        </View>
+                        <View style={styles.commentActions}>
+                            <TouchableOpacity style={styles.likeCommentButton} onPress={() => likeComment(item.id)}>
+                                <Icon name="thumbs-up" size={20} color="white" />
+                            </TouchableOpacity>
                             <TouchableOpacity style={styles.trash} onPress={() => deleteComment(item.id)}>
                                 <Icon name="trash" size={20} color="white" />
                             </TouchableOpacity>
                         </View>
-                    )}
-                    keyExtractor={(item) => item.id.toString()}
-                    inverted // Display new comments at the top
-                />
-            </ScrollView>
+                    </View>
+                )}
+                keyExtractor={(item) => item.id.toString()}
+                contentContainerStyle={styles.commentsList}
+                ListFooterComponent={<View style={{ height: 100 }} />} // Spacer for input field
+            />
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.commentInput}
@@ -142,6 +175,26 @@ const DetailsPage = ({ route }) => {
                     <Text style={styles.sendButtonText}>Send</Text>
                 </TouchableOpacity>
             </View>
+            {mostLikedComment && (
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                    }}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Most Liked Comment:</Text>
+                        <Text style={styles.modalText}>{mostLikedComment.text}</Text>
+                        <Text style={styles.modalText}>Likes: {mostLikedComment.likes}</Text>
+                        <TouchableOpacity
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => setModalVisible(!modalVisible)}>
+                            <Text style={styles.buttonText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+            )}
         </View>
     );
 }
@@ -155,7 +208,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(40, 40, 40, 0.85)',
         padding: 20,
         borderRadius: 10,
-        height: 420,
+        height: '40%',
     },
     backgroundImage: {
         marginTop: 25,
@@ -178,8 +231,13 @@ const styles = StyleSheet.create({
         marginBottom: 25,
         color: 'white',
     },
-    commentSection: {
-        flex: 1,
+    actionButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginVertical: 20,
+    },
+    commentsList: {
+        paddingBottom: 150, // Add padding to avoid overlap with input field
     },
     inputContainer: {
         flexDirection: 'row',
@@ -188,6 +246,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
         backgroundColor: '#111720',
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
     },
     commentInput: {
         flex: 1,
@@ -210,17 +271,22 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     likeButton: {
-        width: 80,
+        width: 150,
         backgroundColor: 'transparent',
         borderColor: 'white',
         borderWidth: 1,
         borderStyle: 'solid',
         padding: 10,
         borderRadius: 50,
-        marginLeft: 'auto',
-        marginTop: 20,
-        marginBottom: 20,
-        marginRight: 20,
+    },
+    showMostLikedButton: {
+        width: 200,
+        backgroundColor: 'transparent',
+        borderColor: 'white',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        padding: 10,
+        borderRadius: 50,
     },
     button: {
         backgroundColor: 'red',
@@ -249,7 +315,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 10,
         marginLeft: '5%',
-        width: '92%'
+        width: '90%',
     },
     commentTextContainer: {
         flex: 1,
@@ -266,9 +332,44 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginLeft: 15,
     },
+    commentLikes: {
+        color: 'gray',
+        fontSize: 12,
+        marginTop: 5,
+        marginLeft: 15,
+    },
+    commentActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    likeCommentButton: {
+        marginRight: 10,
+    },
     trash: {
         marginRight: 10
-    }
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    buttonClose: {
+        backgroundColor: 'red',
+    },
 });
 
 export default DetailsPage;

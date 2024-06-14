@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         textAlign: 'center',
-        fontFamily: 'Verdana',
+        fontFamily: 'Verdana_400Regular',
     },
     cards2: {
         height: '110%',
