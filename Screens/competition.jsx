@@ -54,7 +54,7 @@ export default function Competition() {
                         </TouchableOpacity>
                         <View style={styles.spacer} />
                         <Image
-                            source={require('../assets/NFLogo.png')}
+                            source={require('../assets/AppLogo.png')}
                             style={styles.menuLogo}
                         />
                     </View>

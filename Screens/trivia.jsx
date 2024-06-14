@@ -1,11 +1,11 @@
-import React from 'react';
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
+// Updated Trivia.jsx file
+
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import TriviaQuestions from './TriviaQuestions'; // Import the TriviaQuestions component
 
 export default function Trivia() {
-    const navigation = useNavigation();
-
     return (
         <LinearGradient
             colors={['#202B3D', '#121521']}
@@ -16,20 +16,18 @@ export default function Trivia() {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.container}>
                     <View style={styles.menu}>
-                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                            <Image
-                                source={require('../assets/menu.png')}
-                                style={styles.menuButton}
-                            />
-                        </TouchableOpacity>
+                        {/* Remove the navigation related code */}
                         <Image
-                            source={require('../assets/NFLogo.png')}
+                            source={require('../assets/menu.png')}
+                            style={styles.menuButton}
+                        />
+                        <Image
+                            source={require('../assets/AppLogo.png')}
                             style={styles.menuLogo}
                         />
                     </View>
-                    <TouchableOpacity onPress={() => navigation.navigate('TriviaQuestions')}>
-                        <Text style={styles.navigateText}>Go to Trivia Questions</Text>
-                    </TouchableOpacity>
+                    {/* Instead of a button, render the TriviaQuestions component directly */}
+                    <TriviaQuestions />
                 </View>
             </ScrollView>
         </LinearGradient>
@@ -59,12 +57,6 @@ const styles = StyleSheet.create({
         height: 50,
         marginLeft: 'auto',
         marginRight: 30,
-    },
-    navigateText: {
-        color: 'white',
-        fontSize: 20,
-        textAlign: 'center',
-        marginTop: 20,
     },
     scrollContainer: {
         flexGrow: 1,

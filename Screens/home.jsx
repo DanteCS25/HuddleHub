@@ -23,7 +23,7 @@ const HomeScreen = () => {
                             />
                         </TouchableOpacity>
                         <Image
-                            source={require('../assets/NFLogo.png')}
+                            source={require('../assets/AppLogo.png')}
                             style={styles.menuLogo}
                         />
                     </View>
