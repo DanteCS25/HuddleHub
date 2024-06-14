@@ -132,7 +132,7 @@ const CreateScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ImageBackground source={require('../assets/background.jpg')} style={styles.backgroundImage}>
+            <ImageBackground source={require('../assets/JoinUs.jpg')} style={styles.backgroundImage}>
                 <View style={styles.container}>
                     <View>
                         <Text style={styles.joinText}>Join the</Text>

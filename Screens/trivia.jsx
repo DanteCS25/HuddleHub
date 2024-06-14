@@ -4,8 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import TriviaQuestions from './TriviaQuestions'; // Import the TriviaQuestions component
+import { useNavigation } from '@react-navigation/native';
 
 export default function Trivia() {
+    const navigation = useNavigation();
+
     return (
         <LinearGradient
             colors={['#202B3D', '#121521']}
@@ -16,11 +19,12 @@ export default function Trivia() {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.container}>
                     <View style={styles.menu}>
-                        {/* Remove the navigation related code */}
-                        <Image
-                            source={require('../assets/menu.png')}
-                            style={styles.menuButton}
-                        />
+                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                            <Image
+                                source={require('../assets/menu.png')}
+                                style={styles.menuButton}
+                            />
+                        </TouchableOpacity>
                         <Image
                             source={require('../assets/AppLogo.png')}
                             style={styles.menuLogo}
@@ -43,6 +47,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     menu: {
+        marginBottom: '20%',
         top: 80,
         flexDirection: 'row',
     },

@@ -204,11 +204,11 @@ const TriviaQuestions = () => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text>Do you even know NFL?</Text>
+            <Text style={styles.title}>Do you even know NFL?</Text>
             {questions.map((q) => (
                 <LinearGradient
                     key={q.id}
-                    colors={['#4c669f', '#3b5998', '#192f6a']}
+                    colors={['#202B3D', '#121521']}
                     style={styles.questionContainer}
                 >
                     <Text style={styles.questionText}>{q.question}</Text>
@@ -254,20 +254,25 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 30,
     },
+    title: {
+        fontSize: 20,
+        color: 'white',
+        marginBottom: '5%'
+    },
     questionContainer: {
         marginBottom: 20,
         padding: 20,
         borderRadius: 10,
     },
     questionText: {
-        fontSize: 18,
+        fontSize: 16,
         marginBottom: 10,
         color: 'white',
     },
     option: {
         padding: 10,
         marginVertical: 5,
-        backgroundColor: 'lightgrey',
+        backgroundColor: 'grey',
         borderRadius: 5,
     },
     correct: {
@@ -278,10 +283,10 @@ const styles = StyleSheet.create({
     },
     optionText: {
         fontSize: 16,
-        color: 'black',
+        color: 'white',
     },
     finishButton: {
-        backgroundColor: '#1E90FF',
+        backgroundColor: '#202B3D',
         padding: 10,
         borderRadius: 5,
         marginTop: 20,
@@ -292,7 +297,7 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     refreshButton: {
-        backgroundColor: '#FF6347',
+        backgroundColor: 'red',
         padding: 10,
         borderRadius: 5,
         marginTop: 10,
