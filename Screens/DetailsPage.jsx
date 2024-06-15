@@ -3,8 +3,8 @@ import { View, Text, Image, TouchableOpacity, TextInput, FlatList, StyleSheet, M
 import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { db } from '../firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../firebase'; // Adjust this import as per your firebase setup
+import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'; // Ensure correct Firestore method imports
 
 const DetailsPage = ({ route }) => {
     const { item } = route.params;
@@ -15,8 +15,6 @@ const DetailsPage = ({ route }) => {
     const [mostLikedComment, setMostLikedComment] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const itemKey = `likes_${item.id}`;
-
     useEffect(() => {
         loadLikes();
         loadComments();
@@ -24,19 +22,30 @@ const DetailsPage = ({ route }) => {
 
     const loadLikes = async () => {
         try {
-            const likesString = await AsyncStorage.getItem(itemKey);
-            if (likesString !== null) {
-                setLikes(parseInt(likesString, 10));
+            const user = await AsyncStorage.getItem('user'); // Replace with your user authentication logic
+            const userDoc = await getDoc(doc(db, 'users', user));
+            if (userDoc.exists()) {
+                const competitionData = userDoc.data().competitions || {};
+                const competitionLikes = competitionData[item.id] || 0;
+                setLikes(competitionLikes);
             }
         } catch (error) {
             console.error(`Error loading likes for item ${item.id}`, error);
         }
     };
 
-    const saveLikes = async (likes) => {
+    const saveLikes = async (newLikes) => {
         try {
-            await addDoc(collection(db, "likes"), { itemId: item.id, likes: likes });
-            console.log(`Likes saved for item ${item.id}: ${likes}`);
+            const user = await AsyncStorage.getItem('user'); // Replace with your user authentication logic
+            const userRef = doc(db, 'users', user);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const competitionData = userDoc.data().competitions || {};
+                competitionData[item.id] = newLikes;
+                await updateDoc(userRef, { competitions: competitionData });
+                console.log(`Likes updated for item ${item.id}: ${newLikes}`);
+                setLikes(newLikes);
+            }
         } catch (error) {
             console.error(`Error saving likes for item ${item.id}`, error);
         }
@@ -44,10 +53,9 @@ const DetailsPage = ({ route }) => {
 
     const loadComments = async () => {
         try {
-            const commentsString = await AsyncStorage.getItem(`comments_${item.id}`);
-            if (commentsString !== null) {
-                setComments(JSON.parse(commentsString));
-            }
+            const commentsSnapshot = await getDocs(collection(db, 'comments'));
+            const commentsData = commentsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            setComments(commentsData);
         } catch (error) {
             console.error(`Error loading comments for item ${item.id}`, error);
         }
@@ -56,11 +64,11 @@ const DetailsPage = ({ route }) => {
     const saveComment = async () => {
         try {
             const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            const newCommentObj = { id: comments.length + 1, text: comment, time: currentTime, likes: 0 }; // Initialize likes to 0
-            const updatedComments = [newCommentObj, ...comments]; // New comment added at the top
-            await AsyncStorage.setItem(`comments_${item.id}`, JSON.stringify(updatedComments));
-            setComments(updatedComments);
+            const newCommentObj = { text: comment, time: currentTime, likes: 0 }; // Initialize likes to 0
+            const docRef = await addDoc(collection(db, 'comments'), newCommentObj);
+            console.log(`Comment added with ID: ${docRef.id}`);
             setComment('');
+            loadComments(); // Reload comments after adding
         } catch (error) {
             console.error(`Error saving comment for item ${item.id}`, error);
         }
@@ -68,24 +76,26 @@ const DetailsPage = ({ route }) => {
 
     const deleteComment = async (commentId) => {
         try {
-            const updatedComments = comments.filter(comment => comment.id !== commentId);
-            await AsyncStorage.setItem(`comments_${item.id}`, JSON.stringify(updatedComments));
-            setComments(updatedComments);
+            await deleteDoc(doc(db, 'comments', commentId));
+            console.log(`Comment with ID ${commentId} successfully deleted`);
+            loadComments(); // Reload comments after deletion
         } catch (error) {
-            console.error(`Error deleting comment for item ${item.id}`, error);
+            console.error(`Error deleting comment with ID ${commentId}`, error);
         }
     };
 
     const likeComment = async (commentId) => {
         try {
-            const updatedComments = comments.map(comment => {
-                if (comment.id === commentId) {
-                    return { ...comment, likes: comment.likes + 1 };
-                }
-                return comment;
-            });
-            await AsyncStorage.setItem(`comments_${item.id}`, JSON.stringify(updatedComments));
-            setComments(updatedComments);
+            const commentRef = doc(db, 'comments', commentId);
+            const commentDoc = await getDoc(commentRef);
+            if (commentDoc.exists()) {
+                const updatedLikes = commentDoc.data().likes + 1;
+                await updateDoc(commentRef, { likes: updatedLikes });
+                console.log(`Likes incremented for comment with ID ${commentId}`);
+                loadComments(); // Reload comments after updating likes
+            } else {
+                console.error(`Comment with ID ${commentId} does not exist`);
+            }
         } catch (error) {
             console.error(`Error liking comment for item ${item.id}`, error);
         }
@@ -120,6 +130,8 @@ const DetailsPage = ({ route }) => {
         setMostLikedComment(mostLiked);
         setModalVisible(true);
     };
+
+    
 
     return (
         <View style={styles.container}>
@@ -197,7 +209,7 @@ const DetailsPage = ({ route }) => {
             )}
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -221,6 +233,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 5,
         marginTop: 20,
+       
+
         color: 'white',
     },
     description: {
@@ -256,6 +270,7 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderRadius: 5,
         padding: 10,
+
         marginRight: 10,
         color: 'white',
     },

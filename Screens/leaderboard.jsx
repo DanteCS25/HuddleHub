@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
         marginRight: -10
     },
     loadingContainer: {
+        backgroundColor: '#22272A',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -131,15 +132,20 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     emptyText: {
+        backgroundColor: '#22272A',
+        resizeMode: 'cover',
+        height: '100%',
+        width: '100%',
         color: 'white',
         fontSize: 18,
         textAlign: 'center',
-        marginTop: 20,
+        paddingTop: '50%',
     },
     header: {
         color: 'white',
         fontSize: 24,
         textAlign: 'center',
+        marginTop: -150,
         marginBottom: 20,
         fontWeight: 'bold',
     },
