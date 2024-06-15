@@ -1,17 +1,24 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground, margin } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Importing FontAwesome icons
 
 const HomeScreen = () => {
     const navigation = useNavigation();
+    const screenWidth = Dimensions.get('window').width;
+    const cardWidth = screenWidth * 0.7;
+    const margin = screenWidth * 0.05;
+
+    const cardsData = [
+        { image: require('../assets/slide1.png'), text: 'Live Commentary', route: 'Competition' },
+        { image: require('../assets/slide2.png'), text: 'Trivia', route: 'Trivia' },
+        { image: require('../assets/slide3.png'), text: 'Who WON', route: 'Leaderboard' },
+    ];
 
     return (
-        <LinearGradient
-            colors={['#202B3D', '#121521']}
-            start={[1, 0]}
-            end={[1, 1]}
-            style={styles.gradient}
+        <ImageBackground
+            source={require('../assets/Home.png')}
+            style={styles.backgroundImage}
         >
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.container}>
@@ -27,64 +34,68 @@ const HomeScreen = () => {
                             style={styles.menuLogo}
                         />
                     </View>
-                    <View style={styles.shadow}>
-                        <LinearGradient
-                            start={[0, 1]}
-                            end={[1, 0]}
-                            intensity={50}
-                            colors={['#202B3D', '#202B3D']}
-                            style={styles.search}
-                        >
-                            <Image
-                                source={require('../assets/search.png')}
-                                style={styles.searchImage}
-                            />
-                            <TextInput
-                                placeholder="Search"
-                                placeholderTextColor="white"
-                                style={styles.textInput}
-                            />
-                            <View style={styles.line}></View>
-                            <Image
-                                source={require('../assets/mic.png')}
-                                style={styles.micImage}
-                            />
-                        </LinearGradient>
+                    <View style={styles.search}>
+                        <Image
+                            source={require('../assets/search.png')}
+                            style={styles.searchImage}
+                        />
+                        <TextInput
+                            placeholder="Search"
+                            placeholderTextColor="white"
+                            style={styles.textInput}
+                        />
+                        <View style={styles.line}></View>
+                        <Image
+                            source={require('../assets/mic.png')}
+                            style={styles.micImage}
+                        />
                     </View>
                     <View style={styles.cards1}>
                         <Text style={styles.header}>
                             Thriving NFL Spotlight
                         </Text>
-                        <View style={styles.cards2}>
-                            <LinearGradient
-                                start={[1, 0.5]}
-                                end={[1, 0]}
-                                colors={['#161D26', '#111720']}
-                                style={styles.cards2}
-                            >
-                                <Image
-                                    source={require('../assets/Green.png')}
-                                    style={styles.footballer}
-                                />
-
-                                <View style={styles.comptetition}>
-                                    <Text style={styles.info1}>Live Comentary</Text>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Competition')} style={styles.button}>
-                                        <Text title="Sign Up" style={styles.buttonText}>Join Us</Text>
-                                    </TouchableOpacity>
+                        <ScrollView 
+                            horizontal 
+                            pagingEnabled 
+                            snapToInterval={cardWidth + margin} 
+                            decelerationRate="fast" 
+                            showsHorizontalScrollIndicator={false} 
+                            contentContainerStyle={styles.horizontalScroll}
+                        >
+                            {cardsData.map((card, index) => (
+                                <View key={index} style={[styles.card, { width: cardWidth, marginHorizontal: margin / 2 }]}>
+                                    <ImageBackground
+                                        source={card.image}
+                                        style={styles.cardContent}
+                                        imageStyle={styles.cardImage}
+                                        resizeMode="cover"
+                                    >
+                                        <View style={styles.competition}>
+                                            <Text style={styles.info1}>{card.text}</Text>
+                                            <TouchableOpacity onPress={() => navigation.navigate(card.route)} style={styles.button}>
+                                                <Text style={styles.buttonText}>
+                                                    <Icon name="arrow-right" size={20} color="white" /> {/* Using the arrow icon */}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </ImageBackground>
                                 </View>
-                            </LinearGradient>
-                        </View>
+                            ))}
+                        </ScrollView>
                     </View>
                 </View>
             </ScrollView>
-        </LinearGradient>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
-    gradient: {
-        flex: 1,
+    backgroundImage: {
+        position: 'absolute',
+        resizeMode: 'cover',
+        height: '100%',
+        width: '100%',
+        zIndex: -1,
     },
     container: {
         backgroundColor: 'transparent',
@@ -107,34 +118,24 @@ const styles = StyleSheet.create({
         marginRight: 30,
     },
     search: {
-        width: "85%", // Adjust width as needed
+        width: "85%",
         height: 60,
-        borderRadius: 10,
-        top: 110, // Adjust vertical position as needed
+        borderRadius: 8,
+        borderColor: 'grey',
+        borderWidth: 1,
+        top: 110,
         shadowColor: 'black',
         shadowOffset: { width: 4, height: 4 },
         shadowOpacity: 2.0,
         shadowRadius: 3,
         flexDirection: 'row',
         alignItems: 'center',
-        alignSelf: 'center', // Center horizontally
-    },
-    shadow: {
-        shadowColor: 'black',
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
+        alignSelf: 'center',
     },
     searchImage: {
         width: 30,
         height: 30,
         marginLeft: "5%",
-    },
-    text: {
-        color: 'white',
-        marginLeft: "6%",
-        fontSize: 18,
-        opacity: 0.5,
     },
     textInput: {
         color: 'white',
@@ -153,16 +154,14 @@ const styles = StyleSheet.create({
     micImage: {
         width: 25,
         height: 25,
-        marginLeft: 18,
-        opacity: 0.6,
         marginLeft: 'auto',
         marginRight: "6%",
+        opacity: 0.6,
     },
     cards1: {
-        height: 350,
-        width: '80%',
+        height: 550,
+        width: '100%',
         top: 150,
-        marginLeft: '10%',
         borderRadius: 20,
         alignItems: 'center',
     },
@@ -171,51 +170,61 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center',
         fontFamily: 'Verdana_400Regular',
+        marginBottom: 10,
     },
-    cards2: {
-        height: '110%',
+    horizontalScroll: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 20,
+        paddingLeft: margin,
+    },
+    card: {
+        height: 550,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    cardContent: {
+        height: '100%',
         width: '100%',
         borderRadius: 20,
-        top: '5%',
     },
-    footballer: {
-        width: '95%',
-        height: 435,
-        marginLeft: 'auto',
+    cardImage: {
+        height: 480,
+        width: 260,
+        borderRadius: 20,
     },
     info1: {
         position: 'absolute',
         color: 'white',
-        fontSize: 20,
+        fontSize: 18,
         width: '100%',
-        textAlign: 'center',
-        top: '15%',
+        paddingLeft: 30,
+        top: '75%',
     },
-    comptetition: {
+    competition: {
         width: '100%',
-        height: 130,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        height: '100%',
         position: 'absolute',
         borderRadius: 20,
-        top: '70%',
-        filter: 'blur(50px)',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
     },
     button: {
         backgroundColor: '#D50A0A',
-        borderRadius: 5,
+        borderRadius: 10,
         position: 'absolute',
-        width: '50%',
-        height: 40,
-        top: '50%',
+        width: '17%',
+        height: 45,
+        top: '73%',
+        justifyContent: 'center', // Centering the icon
+        left: '77%',
+        paddingLeft: 5,
     },
     buttonText: {
         color: 'white',
         textAlign: 'center',
-        top: 11,
-        textDecorationLine: 'none',
     },
     scrollContainer: {
         flexGrow: 1,

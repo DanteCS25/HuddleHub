@@ -1,25 +1,21 @@
-// Updated Trivia.jsx file
-
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import TriviaQuestions from './TriviaQuestions'; // Import the TriviaQuestions component
+import React from 'react';
+import { StyleSheet, View, Image, ScrollView, ImageBackground, TouchableOpacity } from 'react-native';
+import TriviaQuestions from './TriviaQuestions';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Trivia() {
     const navigation = useNavigation();
 
     return (
-        <LinearGradient
-            colors={['#202B3D', '#121521']}
-            start={[1, 0]}
-            end={[1, 1]}
-            style={styles.gradient}
+        <ImageBackground
+            source={require('../assets/Home.png')} // Replace with your background image path
+            style={styles.backgroundImage}
+            resizeMode="cover"
         >
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.container}>
                     <View style={styles.menu}>
-                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
                             <Image
                                 source={require('../assets/menu.png')}
                                 style={styles.menuButton}
@@ -30,21 +26,21 @@ export default function Trivia() {
                             style={styles.menuLogo}
                         />
                     </View>
-                    {/* Instead of a button, render the TriviaQuestions component directly */}
                     <TriviaQuestions />
                 </View>
             </ScrollView>
-        </LinearGradient>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    gradient: {
+    backgroundImage: {
         flex: 1,
+        resizeMode: 'cover',
     },
     container: {
-        backgroundColor: 'transparent',
         flex: 1,
+        backgroundColor: 'transparent',
     },
     menu: {
         marginBottom: '20%',

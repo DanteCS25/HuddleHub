@@ -1,9 +1,11 @@
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { db } from '../firebase'; // Ensure you have your Firebase configuration here
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 
 export default function Leaderboard() {
+    const navigation = useNavigation();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -43,17 +45,41 @@ export default function Leaderboard() {
     }, []);
 
     if (loading) {
-        return <Text>Loading...</Text>;
+        return (
+            <View style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#FFFFFF" />
+                <Text style={styles.loadingText}>Loading...</Text>
+            </View>
+        );
     }
 
     if (!items || items.length === 0) {
-        return <Text>No items available</Text>;
+        return <Text style={styles.emptyText}>No items available</Text>;
     }
 
     return (
+        <ImageBackground
+        source={require('../assets/comp.png')}
+        style={styles.backgroundImage}
+    >
         <View style={styles.container}>
+            <View style={styles.container}>
+                    <View style={styles.menu}>
+                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                            <Image
+                                source={require('../assets/menu.png')}
+                                style={styles.menuButton}
+                            />
+                        </TouchableOpacity>
+                        <Image
+                            source={require('../assets/AppLogo.png')}
+                            style={styles.menuLogo}
+                        />
+                    </View>
+                    </View>
             <Text style={styles.header}>Leaderboard</Text>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
+                
                 {items.map((item, index) => (
                     <View key={item.id} style={styles.card}>
                         <Text style={styles.rank}>{index + 1}</Text>
@@ -63,14 +89,52 @@ export default function Leaderboard() {
                 ))}
             </ScrollView>
         </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        position: 'absolute',
+        resizeMode: 'cover',
+        height: '100%',
+        width: '100%',
+        zIndex: -1,
+    },
     container: {
-        flex: 1,
-        backgroundColor: '#111720',
         padding: 20,
+        flex: 1,
+    },
+    menu: {
+        top: 50,
+        flexDirection: 'row',
+    },
+    menuButton: {
+        width: 25,
+        height: 25,
+        top: 8,
+        marginRight: -10
+    },
+    menuLogo: {
+        width: 50,
+        height: 50,
+        marginLeft: 'auto',
+        marginRight: -10
+    },
+    loadingContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        color: 'white',
+        fontSize: 18,
+        marginTop: 10,
+    },
+    emptyText: {
+        color: 'white',
+        fontSize: 18,
+        textAlign: 'center',
+        marginTop: 20,
     },
     header: {
         color: 'white',

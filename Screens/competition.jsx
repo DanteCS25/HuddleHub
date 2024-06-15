@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, SafeAreaView, ImageBackground } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { getCompUser } from '../services/dbService';
 import { AntDesign } from '@expo/vector-icons';
-// import { useNavigation } from '@react-navigation/native';
-// import firestore from '@react-native-firebase/firestore';
 
 export default function Competition() {
     const navigation = useNavigation();
@@ -26,7 +23,6 @@ export default function Competition() {
         setCompUsers(allData);
     };
 
-    // Update the handlePressListen function to navigate to 'DetailsPage'
     const handlePressListen = async (itemId) => {
         const item = compUsers.find(user => user.id === itemId);
         if (item) {
@@ -37,11 +33,10 @@ export default function Competition() {
     };
 
     return (
-        <LinearGradient
-            colors={['#202B3D', '#121521']}
-            start={[1, 0]}
-            end={[1, 1]}
-            style={styles.gradient}
+        <ImageBackground
+            source={require('../assets/comp.png')}  // Replace with your background image path
+            style={styles.backgroundImage}
+            resizeMode="cover"
         >
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.container}>
@@ -72,12 +67,7 @@ export default function Competition() {
                         {compUsers.length > 0 ? (
                             compUsers.map((item, index) => (
                                 <TouchableOpacity key={index} style={styles.card} onPress={() => handlePressListen(item.id)}>
-                                    <LinearGradient
-                                        colors={['#161D26', '#111720']}
-                                        start={[1, 0.5]}
-                                        end={[1, 0]}
-                                        style={styles.cardBackground}
-                                    >
+                                    <View style={styles.cardBackground}>
                                         <View style={styles.cardContent}>
                                             <Text style={styles.cardTitle}>{item.title}</Text>
                                             <Text style={styles.cardDescription}>{item.description}</Text>
@@ -90,7 +80,7 @@ export default function Competition() {
                                                 <AntDesign name="arrowright" size={24} color="white" />
                                             </TouchableOpacity>
                                         </View>
-                                    </LinearGradient>
+                                    </View>
                                 </TouchableOpacity>
                             ))
                         ) : (
@@ -99,13 +89,14 @@ export default function Competition() {
                     </SafeAreaView>
                 </View>
             </ScrollView>
-        </LinearGradient>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    gradient: {
+    backgroundImage: {
         flex: 1,
+        resizeMode: 'cover', // or 'stretch' as needed
     },
     container: {
         flex: 1,
@@ -190,6 +181,7 @@ const styles = StyleSheet.create({
     },
     cardBackground: {
         borderRadius: 10,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional: add a transparent background overlay
     },
     cardContent: {
         padding: 20,
