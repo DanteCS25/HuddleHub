@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity, Image, ImageBackground } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import { db } from '../firebase'; // Ensure you have your Firebase configuration here
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 
@@ -9,40 +9,43 @@ export default function Leaderboard() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const likesSnapshot = await getDocs(collection(db, 'likes'));
-                const itemsArray = await Promise.all(
-                    likesSnapshot.docs.map(async docSnapshot => {
-                        const data = docSnapshot.data();
-                        const itemDoc = await getDoc(doc(db, 'items', data.itemId));
-                        const itemData = itemDoc.exists() ? itemDoc.data() : { title: 'Unknown' };
-                        return {
-                            id: docSnapshot.id,
-                            itemId: data.itemId,
-                            likes: data.likes,
-                            title: itemData.title,
-                        };
-                    })
-                );
-                // Sort items by title in ascending order and likes in descending order
-                const sortedItems = [...itemsArray].sort((a, b) => {
-                    if (a.title === b.title) {
-                        return b.likes - a.likes;
-                    }
-                    return a.title.localeCompare(b.title);
-                });
-                setItems(sortedItems);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching items from Firestore:', error);
-                setLoading(false);
-            }
-        };
+    const fetchItems = async () => {
+        try {
+            const likesSnapshot = await getDocs(collection(db, 'likes'));
+            const itemsArray = await Promise.all(
+                likesSnapshot.docs.map(async (docSnapshot) => {
+                    const data = docSnapshot.data();
+                    const itemDoc = await getDoc(doc(db, 'items', docSnapshot.id));
+                    const itemData = itemDoc.exists() ? itemDoc.data() : { title: 'Unknown' };
+                    return {
+                        id: docSnapshot.id,
+                        likes: data.count, // Assuming 'count' field holds the number of likes
+                        title: itemData.title,
+                    };
+                })
+            );
 
+            // Sort items by likes in descending order and title in ascending order
+            const sortedItems = [...itemsArray].sort((a, b) => b.likes - a.likes || a.title.localeCompare(b.title));
+            setItems(sortedItems);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching items from Firestore:', error);
+            setLoading(false);
+        }
+    };
+
+    // Fetch items on initial load and when the screen is focused
+    useEffect(() => {
         fetchItems();
     }, []);
+
+    // Use useFocusEffect to reload data when the screen comes into focus
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchItems();
+        }, [])
+    );
 
     if (loading) {
         return (
@@ -54,41 +57,42 @@ export default function Leaderboard() {
     }
 
     if (!items || items.length === 0) {
-        return <Text style={styles.emptyText}>No items available</Text>;
+        return (
+            <View style={[styles.container, styles.emptyContainer]}>
+                <Text style={styles.emptyText}>No items available</Text>
+            </View>
+        );
     }
 
     return (
         <ImageBackground
-        source={require('../assets/comp.png')}
-        style={styles.backgroundImage}
-    >
-        <View style={styles.container}>
+            source={require('../assets/comp.png')}
+            style={styles.backgroundImage}
+        >
             <View style={styles.container}>
-                    <View style={styles.menu}>
-                        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                            <Image
-                                source={require('../assets/menu.png')}
-                                style={styles.menuButton}
-                            />
-                        </TouchableOpacity>
+                <View style={styles.menu}>
+                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
                         <Image
-                            source={require('../assets/AppLogo.png')}
-                            style={styles.menuLogo}
+                            source={require('../assets/menu.png')}
+                            style={styles.menuButton}
                         />
-                    </View>
-                    </View>
-            <Text style={styles.header}>Leaderboard</Text>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                
-                {items.map((item, index) => (
-                    <View key={item.id} style={styles.card}>
-                        <Text style={styles.rank}>{index + 1}</Text>
-                        <Text style={styles.title}>{item.title}</Text>
-                        <Text style={styles.likes}>Likes: {item.likes}</Text>
-                    </View>
-                ))}
-            </ScrollView>
-        </View>
+                    </TouchableOpacity>
+                    <Image
+                        source={require('../assets/AppLogo.png')}
+                        style={styles.menuLogo}
+                    />
+                </View>
+                <Text style={styles.header}>Leaderboard</Text>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    {items.map((item, index) => (
+                        <View key={item.id} style={styles.card}>
+                            <Text style={styles.rank}>{index + 1}</Text>
+                            <Text style={styles.title}>{item.title}</Text>
+                            <Text style={styles.likes}>Likes: {item.likes}</Text>
+                        </View>
+                    ))}
+                </ScrollView>
+            </View>
         </ImageBackground>
     );
 }
@@ -102,50 +106,51 @@ const styles = StyleSheet.create({
         zIndex: -1,
     },
     container: {
-        padding: 20,
         flex: 1,
+        padding: 20,
+        paddingTop: 60, // Adjust as necessary to avoid overlapping with the header
     },
     menu: {
-        top: 50,
         flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
     },
     menuButton: {
         width: 25,
         height: 25,
-        top: 8,
-        marginRight: -10
+        marginRight: 10,
     },
     menuLogo: {
         width: 50,
         height: 50,
         marginLeft: 'auto',
-        marginRight: -10
     },
     loadingContainer: {
-        backgroundColor: '#22272A',
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#22272A',
     },
     loadingText: {
         color: 'white',
         fontSize: 18,
         marginTop: 10,
     },
-    emptyText: {
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: '#22272A',
-        resizeMode: 'cover',
-        height: '100%',
-        width: '100%',
+    },
+    emptyText: {
         color: 'white',
         fontSize: 18,
         textAlign: 'center',
-        paddingTop: '50%',
     },
     header: {
         color: 'white',
         fontSize: 24,
         textAlign: 'center',
-        marginTop: -150,
         marginBottom: 20,
         fontWeight: 'bold',
     },
