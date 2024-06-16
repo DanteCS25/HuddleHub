@@ -1,6 +1,6 @@
 ## Screenshots
 
-![Logo](../HuddleHub/assets/AppLogo.png)
+![Logo](../assets/AppLogo.png)
 
 <div align="center">
   <br>
