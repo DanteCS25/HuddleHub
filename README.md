@@ -1,6 +1,6 @@
 ## Screenshots
 
-![Logo](../assets/AppLogo.png)
+![Logo](../HuddleHub/assets/AppLogo.png)
 
 <div align="center">
   <br>
@@ -162,5 +162,5 @@ Distributed under the MIT License. See LICENSE for more information.
 
 ## Youtube Tutorial Link
 
- Basic Android Studio Tutorial link: https://youtu.be/INTPHa0GW3Q
+ Basic Android Studio Tutorial link: [https://youtu.be/INTPHa0GW3Q](https://youtu.be/yB3EnDO0fnU)https://youtu.be/yB3EnDO0fnU
 
