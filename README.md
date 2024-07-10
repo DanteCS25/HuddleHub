@@ -1,5 +1,3 @@
-## Screenshots
-
 ![Logo](../HuddleHub/assets/AppLogo.png)
 
 <div align="center">
