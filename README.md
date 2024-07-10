@@ -1,4 +1,4 @@
-![Logo](assets/AppLogo.png)
+<img src="assets/AppLogo.png" alt="Logo" width="150" height="150">
 
 <div align="center">
   <br>
@@ -70,16 +70,16 @@ Huddle Hub is your go-to app for immersive NFL experiences. From live match comm
 
 Here are some screenshots that showcase the features and user interface of HuddleHub:
 
-<img src="../HuddleHub/assets/Screenshot4.jpg" alt="Home Screen" width="200" height="450">
+<img src="assets/Screenshot4.jpg" alt="Home Screen" width="200" height="450">
 *Home Screen - Where users can navigate through different features.*
 
-<img src="../HuddleHub/assets/Screenshot1.jpg" alt="Login Screen" width="200" height="450">
+<img src="assets/Screenshot1.jpg" alt="Login Screen" width="200" height="450">
 *Login Screen - Users can log in to access their accounts.*
 
-<img src="../HuddleHub/assets/Screenshot2.jpg" alt="Competition Screen" width="200" height="450">
+<img src="assets/Screenshot2.jpg" alt="Competition Screen" width="200" height="450">
 *Competition Screen - View and join current competitions.*
 
-<img src="../HuddleHub/assets/Screenshot3.jpg" alt="Leaderboard Screen" width="200" height="450">
+<img src="assets/Screenshot3.jpg" alt="Leaderboard Screen" width="200" height="450">
 *Drawer Screen - Navigation through the whole app.*
    
 
