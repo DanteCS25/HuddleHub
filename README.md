@@ -1,4 +1,6 @@
-<img src="assets/AppLogo.png" alt="Logo" width="150" height="150">
+<div align="center">
+<img src="assets/AppLogo.png" alt="Logo" width="200" height="150">
+</div>
 
 <div align="center">
   <br>
