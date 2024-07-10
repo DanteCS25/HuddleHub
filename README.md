@@ -1,4 +1,4 @@
-![Logo](../assets/AppLogo.png)
+![Logo](assets/AppLogo.png)
 
 <div align="center">
   <br>
