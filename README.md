@@ -1,4 +1,4 @@
-![Logo](../HuddleHub/assets/AppLogo.png)
+![Logo](./HuddleHub/assets/AppLogo.png)
 
 <div align="center">
   <br>
